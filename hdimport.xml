@@ -1,0 +1,26 @@
+﻿<WndTap Name="hdImport" Text="货单导入">
+	<Ctrls><GroupBox Name="GroupBox1" Text="货单导入"><Ctrls>
+		<Label Name="lb_filename"  Size="80,20"	Text="需导入的文件"></Label>
+		<TextBox Name="TB_filename" Size="100,20" Text="货单号导入.xls"></TextBox>        
+		<Label Name="lb_tbname"  Size="50,20" Text="表名"></Label>
+		<TextBox Name="TB_tbname" Size="50,20" Text="sheet1"></TextBox>        
+		<Button Name="SendFile"  Size="50,20"	Text="上传文件"
+			OnClick="SendFile:,filter=*.xls|*.xls|,dir=layout,localdir="></Button>
+		<Button Name="search" Size="50,20" Text="查找" >
+			<OnClick>
+				<DbDetails></DbDetails>
+				<submit next="dataList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="import"   Text="导入" Clickneedconfirm="true" Size="50,20">
+			<OnClick><import button="import">sql:update shop_order set o_hdid='%1',o_state=4 where o_id=%0</import><submit next="dataList" namelist="import" method="post" function="import"/></OnClick></Button>
+		<BR/><ListCtrl Name="dataList"  PageSize="5" Size="500,400">
+			<DbDetails>
+				<DbHost>local</DbHost>
+				<DbDatabase>layout\%{TB_filename}</DbDatabase>
+				<DbSubDriver>Excel</DbSubDriver>
+				<DbTable>[%{TB_tbname}$]</DbTable>
+				<Index>id</Index>
+				<Data>*</Data>
+			</DbDetails>
+			</ListCtrl>
+	      </Ctrls></GroupBox></Ctrls>
+		</WndTap>

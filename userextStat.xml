@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="userExtStat" Text="分级话务量统计"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="分级话务量统计" Size="100,100"><Ctrls>
+	<DateTime Name="YearMon"  Format="yyyy-MM-dd HH:mm:ss" Size="100,20"></DateTime>
+	<Button Name="search" Size="100,20" Text="月度统计">
+		<OnClick><DbDetails><Where>year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}'</Where></DbDetails><submit next="CallList" namelist="DbDetails" method="post"/></OnClick></Button>
+	<Button Name="search" Size="50,20" Text="按日统计">
+		<OnClick>	<DbDetails><Where>year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}'and day(starttime)='%{YearMon[day]}'</Where></DbDetails><submit next="CallList" namelist="DbDetails" method="post"/></OnClick></Button>
+	<Button Name="export" Size="50,20" Text="导出">
+		<OnClick>	<Save></Save><submit next="CallList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+	<BR/><ListCtrl Name="CallList"  Size="600,500"
+			Heading="座席号,50;座席姓名,100;呼出,50;呼入,20;未应答,80;总时长,80;平均时长,160;接通率,80;">
+			<DbDetails>
+				<DbHost></DbHost>
+				<DbDatabase></DbDatabase>
+				<DbSubDriver></DbSubDriver>
+				<DbUser></DbUser>
+				<DbPassword></DbPassword>
+				<DbTable>gwcalls as g inner join userlogin as u on  g.callerid= u.user_name or g.calledid=u.user_name inner join SeatsInfo as s on u.agentid=s.id</DbTable>
+				<Index> </Index>
+				<MDX></MDX>
+				<Data>  s.seatsno,s.seatsname,count(case when g.callerid=u.user_name then 1 else null end)as outcount,count(case when g.calledid=u.user_name then 1 else null end)as incount,count(case when g.calledid=u.user_name and g.conntime='' then 1 else null end)as inaccept,sum(duration) as totalduration,avg(duration) as avgduration</Data>
+<!--count(case when g.calledid=u.user_name and g.conntime!='' then 1 else null end)/count(case when g.calledid=u.user_name then 1 else null end) as rate,-->
+				<Order></Order>
+				<Where>year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}'</Where>
+				<queryFormat>select *,case when a.incount=0 then 0 else convert(float,a.incount-a.inaccept)/convert(float,a.incount) end as rate  from (select %{data} from %{dbtable}   where %{where} group by s.seatsno,s.seatsname) as a</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

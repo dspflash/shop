@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="ClientsStat" Text="新进线统计"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="新进线统计" Size="100,100"><Ctrls>
+		<DateTime Name="DT0" Format="yyyy-MM-dd HH:mm:ss" Location="30,20" Size="120,20" Text="1 day ago"></DateTime>
+		<DateTime Name="DT1" Format="yyyy-MM-dd HH:mm:ss" Size="120,20"></DateTime>
+		<Button Name="search" Size="100,20" Text="统计">
+			<OnClick><DbDetails></DbDetails><submit next="CallList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="export" Size="100,20" Text="导出">
+			<OnClick>	<Save></Save><submit next="CallList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/><ListCtrl Name="CallList" Size="600,500" sumcols="1" sum="0,1" Heading="座席号,20;数量,50;">
+			<DbDetails>
+				<DbTable>shop_client_info</DbTable>
+				<Index> </Index>
+				<Where>c_indate between '%{DT0}' and '%{DT1}'</Where>
+				<queryFormat>select seatsno,count(*) as cnts from shop_client_info where %{where} group by seatsno</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

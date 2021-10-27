@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <WndTap Name="callRecord" Text="通话录音记录" remark="userno and direction enabled">
+		      <Ctrls>
+		        	<DateTime Name="DateTimeStart"  Format="yyyy-MM-dd HH:mm"
+		            LocationX="30" LocationY="10" SizeWidth="120" SizeHeight="20"></DateTime>
+		        	<DateTime Name="DateTimeEnd"  Format="yyyy-MM-dd HH:mm"
+		            LocationX="150" LocationY="10" SizeWidth="120" SizeHeight="20"></DateTime>
+			<ComboBox Name="SearchTp"   SelectedIndex="0" 
+				OnLoad="sql:select cd_desc,cd_data,cd_id from shop.CallDirection"
+				LocationX="270" LocationY="10" SizeWidth="50" SizeHeight="100" Items="呼入|呼出|全部"></ComboBox>
+		        	<ComboBox Name="UserLst"  OnLoad="init"
+		            LocationX="320" LocationY="10" SizeWidth="50" SizeHeight="100" SelectedIndex="0">
+			<DbDetails>
+				<Where>where seatsgroup=%{SeatsGroup}</Where>
+				<queryFormat>select SeatsNo,SeatsName from seatsinfo %{where} order by SeatsNo </queryFormat> 
+			</DbDetails>
+			</ComboBox>
+			<ComboBox Name="GroupLst" Visible="false" Enabled="true" OnLoad="sql:select distinct seatsgroup from seatsinfo"
+			LocationX="370" LocationY="10" SizeWidth="50" SizeHeight="100" SelectedIndex="0">
+			</ComboBox>
+		       	<Label Name="lb_phone"  Text="客户号码"
+		            LocationX="530" LocationY="10" SizeWidth="50" SizeHeight="20"/>
+			<TextBox Name="tb_phone"
+		            LocationX="580" LocationY="10" SizeWidth="80" SizeHeight="24"
+		            Text=""/>
+		        <Button Name="search2"  
+		            LocationX="660" LocationY="10" SizeWidth="100" SizeHeight="24" Text="查找（按号码）">
+			<OnClick>
+			<DbDetails><DbTable>*</DbTable><Order>seatsno!=''</Order><where>  and ('%{tb_phone}'=custid or '%{tb_phone}'=custid) )</where>
+				</DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><assign name="tb_totalpages" expr="0"/><submit next="callRecList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+			<ComboBox Name="SearchTp0"   SelectedIndex="0" 
+				LocationX="30" LocationY="30" SizeWidth="50" SizeHeight="100" Items="全部|用户|组"></ComboBox>
+		        <Button Name="search1"  
+		            LocationX="80" LocationY="30" SizeWidth="100" SizeHeight="24" Text="查找（时间段）">
+			<OnClick>
+				<if cond="%{SearchTp[cd_id]}==1"><assign name="sqltp" expr="and direction=0"/>
+				<elseif cond="%{SearchTp[cd_id]}==2"/><assign name="sqltp" expr="and direction=2"/>	
+				<else/><assign name="sqltp" expr=""/></if>
+				<if cond="%{SearchTp0[SelectedIndex]}==0"><assign name="sqlwhere" expr="seatsno!=''"/><if cond="SeatsLevel&lt;3"><assign name="sqlwhere" expr="%{sqlwhere} and s.seatsgroup=%{SeatsGroup}"/></if>
+				<elseif cond="%{SearchTp0[SelectedIndex]}==1"/><assign name="sqlwhere" expr="seatsno='%{UserLst}'"/>
+				<elseif cond="SeatsLevel&lt;3"/><assign name="sqlwhere" expr="s.seatsgroup=%{SeatsGroup}"/><else/><assign name="sqlwhere" expr="s.seatsgroup=%{GroupLst}"/></if>
+				<DbDetails><DbTable>cdrid,callerid,calledid,calleeid,starttime,duration,alertduration,acd,recfn,userno</DbTable><Order>%{sqlwhere}</Order><where>  )</where>
+				</DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><assign name="tb_totalpages" expr="0"/><submit next="callRecList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		        <Button Name="search2"  
+		            LocationX="180" LocationY="30" SizeWidth="100" SizeHeight="24" Text="查找（过滤重复）">
+			<OnClick>
+				<if cond="%{SearchTp[cd_id]}==1"><assign name="sqltp" expr="and direction=0"/>
+				<elseif cond="%{SearchTp[cd_id]}==2"/><assign name="sqltp" expr="and direction=2"/>	
+				<else/><assign name="sqltp" expr=""/></if>
+				<if cond="%{SearchTp0[SelectedIndex]}==0"><assign name="sqlwhere" expr="seatsno!=''"/><if cond="SeatsLevel&lt;3"><assign name="sqlwhere" expr="%{sqlwhere} and s.seatsgroup=%{SeatsGroup}"/></if>
+				<elseif cond="%{SearchTp0[SelectedIndex]}==1"/><assign name="sqlwhere" expr="seatsno='%{UserLst}'"/>
+				<elseif cond="SeatsLevel&lt;3"/><assign name="sqlwhere" expr="s.seatsgroup=%{SeatsGroup}"/><else/><assign name="sqlwhere" expr="s.seatsgroup=%{GroupLst}"/></if>
+				<DbDetails><DbTable>distinct callerid,max(cdrid) as cdrid,max(calledid) as calledid,max(calleeid) as calleeid,max(starttime) as starttime,max(duration) as duration,max(alertduration) as alertduration,max(acd) as acd,max(recfn) as recfn,max(userno) as userno</DbTable><Order>%{sqlwhere}</Order><where>  and duration!=0 group by callerid)</where>
+				</DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><assign name="tb_totalpages" expr="0"/><submit next="callRecList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		       	<Label Name="lb_totalrecs"  Text="总记录数"
+		            LocationX="330" LocationY="32" SizeWidth="50" SizeHeight="20"/>
+			<TextBox Name="tb_totalrecs" Visible="true" Enabled="false" ReadOnly="false"
+		            LocationX="380" LocationY="30" SizeWidth="40" SizeHeight="24"
+		            Text="">
+			<DbDetails>
+				<DbTable>*</DbTable>
+				<Index>h_id </Index>
+				<Data>count(*) as counts </Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select %{data} from (select %{dbtable} from gwcalls where starttime&gt;'%{DateTimeStart}' and starttime&lt;'%{DateTimeEnd}' %{sqltp} %{where} as g inner join seatsinfo as s on g.userno=s.seatsno  where %{order}</queryFormat> 
+			</DbDetails>
+			<!--OnEnChange><assign name="tb_totalpages" expr="%{tb_totalrecs}/20"/></OnEnChange-->
+			</TextBox>        
+		       	<Label Name="lb_totalpages"  Text="当前页"
+		            LocationX="420" LocationY="32" SizeWidth="40" SizeHeight="20"/>
+		       	<TextBox Name="tb_totalpages" Visible="true" Enabled="false" ReadOnly="false"
+		            LocationX="460" LocationY="30" SizeWidth="20" SizeHeight="24"
+		            Text=""></TextBox>
+		        <Button Name="PrePage"  
+		            LocationX="480" LocationY="30" SizeWidth="50" SizeHeight="24"
+		            Text="上一页" OnClick="(callRecList)GetPage(Pre);(tb_totalpages)SetText(%{callRecList[CurrentPage]})"></Button>
+		        <Button Name="NextPage"  
+		            LocationX="530" LocationY="30" SizeWidth="50" SizeHeight="24"
+		            Text="下一页" OnClick="(callRecList)GetPage(Next);(tb_totalpages)SetText(%{callRecList[CurrentPage]})"></Button>
+		        <Button Name="export"  
+		            LocationX="580" LocationY="30" SizeWidth="50" SizeHeight="24" Text="导出">
+			<OnClick>	<Save></Save><submit next="callRecList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		        <ListCtrl Name="callRecList"  PageSize="1000"
+		            LocationX="20" LocationY="90" SizeWidth="730" SizeHeight="500"
+			OnLoad=""
+			OnClick="SetText(tb_rcdfn,%{recFn});SetText(tb_PhoneNum0,%2);SetText(tb_PhoneNum1,%4);"
+		            Heading="序号,10;座席名,50;主叫,80;主叫归属地,80;被叫,80;外线被叫,80;开始时间,120;时长,40;回铃时长,40;座席号,50;">
+			<DbDetails>
+				<DbTable>*</DbTable>
+				<Index>h_id </Index>
+				<Data>* from (select g.cdrid,s.SeatsName,g.callerid,numlocal(callerid) as loc,g.calledid,g.calleeid,CONVERT(VARCHAR(16),g.starttime,120) as starttime,Num2Time(g.duration) as duration,Num2Time(g.alertduration) as alertduration,s.SeatsNo,g.acd,g.recFn ,ROW_NUMBER() over(order by g.cdrid desc) as rownumber</Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select %{data} from (select %{dbtable} from gwcalls where starttime&gt;'%{DateTimeStart}' and starttime&lt;'%{DateTimeEnd}' %{sqltp} %{where} as g inner join seatsinfo s on g.userno=s.SeatsNo where  %{order}) as x  where rownumber BETWEEN  %{StartRow} and %{StartRow}+%{PgSize} </queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+		        	<Label Name="lb_rcdfn"  
+		            LocationX="30" LocationY="60" SizeWidth="30" SizeHeight="20"
+		            Text="录音"></Label>
+		       	<TextBox Name="tb_rcdfn"
+		            LocationX="60" LocationY="60" SizeWidth="150" SizeHeight="24"
+		            Text=""></TextBox>        
+		        	<Button Name="getrfn"  
+		            LocationX="230" LocationY="60" SizeWidth="100" SizeHeight="24"
+		            Text="播放录音" OnClick="GetFile:%{tb_rcdfn},dir=f:\\record\,localdir="></Button>
+		        	<Label Name="lb_PhoneNum"  
+		            LocationX="400" LocationY="60" SizeWidth="50" SizeHeight="20" Text="电话号码"></Label>
+		       	<TextBox Name="tb_PhoneNum0"
+		            LocationX="450" LocationY="60" SizeWidth="80" SizeHeight="24" Text=""></TextBox>        
+		        	<Button Name="dial0"  
+		            LocationX="530" LocationY="60" SizeWidth="50" SizeHeight="24" Text="呼叫">
+				<OnClick><assign name="topmost" expr="nis3ucs:%{tb_PhoneNum0}"/>
+				<assign name="custom.TB_mobile" expr="%{tb_PhoneNum0}"/>
+				<DbDetails></DbDetails><submit next="custom.TB_Location" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where c_tel='%{custom.TB_mobile}' or c_mobile='%{custom.TB_mobile}' or c_elsephone='%{custom.TB_mobile}'</Where></DbDetails><submit next="custom.ContactList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		       	<TextBox Name="tb_PhoneNum1"
+		            LocationX="580" LocationY="60" SizeWidth="80" SizeHeight="24" Text=""></TextBox>        
+		        	<Button Name="dial1"  
+		            LocationX="660" LocationY="60" SizeWidth="50" SizeHeight="24" Text="呼叫">
+				<OnClick><assign name="topmost" expr="nis3ucs:%{tb_PhoneNum1}"/>
+				<assign name="custom.TB_mobile" expr="%{tb_PhoneNum1}"/>
+				<DbDetails></DbDetails><submit next="custom.TB_Location" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where c_tel='%{custom.TB_mobile}' or c_mobile='%{custom.TB_mobile}' or c_elsephone='%{custom.TB_mobile}'</Where></DbDetails><submit next="custom.ContactList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		        <!--Label Name="lb_score"  
+		            LocationX="330" LocationY="370" SizeWidth="50" SizeHeight="20"
+		            Text="录音"></Label>
+		       	<TextBox Name="tb_score"
+		            LocationX="380" LocationY="370" SizeWidth="50" SizeHeight="24"
+		            Text=""></TextBox>        
+		        <Button Name="score"  
+		            LocationX="430" LocationY="370" SizeWidth="100" SizeHeight="24"
+		            Text="打分" OnClick="sql:update gwcalls set score=%{tb_score} where cdrid=%{tb_rcdfn[cdrid]}"></Button-->
+		      </Ctrls>      
+		<OnActivate><if cond="SeatsLevel&gt;2">
+		<DbDetails><Where></Where></DbDetails><submit next="UserLst" namelist="DbDetails" method="post"/>
+		<SetVisible name="GroupLst" Visible="1"/>
+		</if>
+		</OnActivate>
+    </WndTap>
+
+
+

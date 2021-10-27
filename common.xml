@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?><BXML debug="1">
+	<DbDetails>
+		<SubDriver>MySQL</SubDriver>
+		<Host>localhost</Host>
+		<database>mylayout</database>
+		<characterset>utf8</characterset>
+		<sqlMode>NO_BACKSLASH_ESCAPES</sqlMode>
+		<User>i3u</User>
+		<password>i3u</password>
+		
+		<purview>select m.module,m.purview from modules as m left join userlogin as u on u.bizrole=m.role_id where user_name='%{UserName}'</purview>
+		</DbDetails>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lan\general.xml"/>	
+<WndTaps>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shop_client_info_v.xml"/>
+	<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shop_discount_v.xml"></xi:include>
+	</WndTaps>
+</BXML>

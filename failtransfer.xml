@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="failtransfer" Text="漏话统计"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="漏话统计" Size="100,100"><Ctrls>
+		<DateTime Name="YearMon"  Format="yyyy-MM-dd HH:mm:ss" Size="120,20"></DateTime>
+		<Button Name="search"  Size="60,20" Text="按日统计">
+			<OnClick><DbDetails></DbDetails><submit next="CallList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="export" Size="60,20" Text="导出">
+			<OnClick><Save></Save><submit next="CallList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/><ListCtrl Name="CallList"  Size="600,500"
+			Heading="主叫号码,50;被叫号码,50;来电时间,100;挂断时间,50;等待时长,20;">
+			<DbDetails>
+				<DbHost></DbHost>
+				<DbDatabase></DbDatabase>
+				<DbSubDriver></DbSubDriver>
+				<DbUser></DbUser>
+				<DbPassword></DbPassword>
+				<DbTable>gwcalls</DbTable>
+				<Index> </Index>
+				<MDX></MDX>
+				<Data>callerid,calleeid,starttime,endtime,totalduration</Data>
+				<Order>order by cdrid desc</Order>
+				<Where>year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}' and day(starttime)='%{YearMon[day]}' and calleeid!=''and callid=''</Where>
+				<queryFormat>select %{data} from gwcalls where %{where} %{order}</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

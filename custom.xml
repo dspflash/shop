@@ -1,0 +1,160 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="custom" Text="客户信息">
+	<WndTaps>
+		<xi:include href="orderinfo0.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	</WndTaps>
+	<Ctrls>
+		<!--Label Name="lb_incallnum"  Text="来电号码" Size="30,20"/>
+		<TextBox Name="TB_incallnum" Size="30,20">
+			<OnEnChange><if cond="%{TB_incallnum}"><DbDetails></DbDetails><submit next="TB_Location" namelist="DbDetails" method="post"/>
+			<else/><assign name="TB_Location" expr=""/></if></OnEnChange></TextBox-->
+		<TAB/><GroupBox Name="GroupBox1"  Text="联系人" Size="100,100"><Ctrls>
+		<TextBox Name="c_id" Visible="false" Enabled="1" ReadOnly="false" Size="20,20">
+			<OnEnChange><if cond="%{c_id}"><DbDetails></DbDetails><submit next="HistoryList" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/>
+				<assign name="CB_eyeill" expr="-1" function="SetSel"/>
+				<assign name="CB_content" expr="-1" function="SetSel"/>
+				<assign name="CB_media" expr="-1" function="SetSel"/>
+				<assign name="CB_newCustomer" expr="-1" function="SetSel"/>
+				<assign name="CB_callOrderType" expr="-1" function="SetSel"/>
+				<assign name="TB_info" expr="-1" function="SetSel"/>
+				<assign name="TB_remarkh" expr=" " function="SetText"/>
+				<else/><submit next="OrderList" method="post" function="resetcontent"/><submit next="HistoryList" method="post" function="resetcontent"/></if></OnEnChange>
+			</TextBox>        
+		<Label Name="lb_name"  Text="姓名" Size="50,20" overlap="pre"/>
+		<TextBox Name="c_name" Size="100,20" tooltip="回车搜索"><OnEnterKey><submit next="search_n" function="click"/></OnEnterKey></TextBox>
+		<Button Name="search_n" Size="20,20" Text="搜">
+			<OnClick><if cond="%{c_name}"><DbDetails><where>c_name='%{c_name}'</where></DbDetails><submit next="ContactList" namelist="DbDetails" method="post"/><assign name="TB_Location" expr=""/></if></OnClick></Button>
+		<Label Name="lb_sex"  Text="性别" Size="50,20" align="right"/>
+		<ComboBox Name="c_sex"  Items="男|女" Size="50,20" SelectedIndex="1"></ComboBox>
+		<TAB/><Label Name="lb_birthdate"  Text="出生日期" Size="50,20" align="right"/>
+		<DateTime Name="c_birthdate"  Format="yyyy-MM-dd" Size="90,20"></DateTime>
+		<TAB/><TAB/><Label Name="lb_age"  Text="年龄" Size="50,20" align="right"/>
+		<TextBox Name="c_age" Number="true" Size="60,20" Text=""/>        
+		<TAB/><TextBox Name="TB_incallid" Visible="false" Enabled="true" ReadOnly="false" Size="20,20" Text=""/> 
+	    <BR/><Label Name="lb_moblie"  Text="移动电话" Size="50,20"/>
+		<TextBox Name="c_mobile" Size="100,20" tooltip="回车搜索"><OnEnterKey><submit next="search_m" function="click"/></OnEnterKey></TextBox>
+		<Button Name="search_m" Size="20,20" Text="搜">
+			<OnClick><if cond="%{c_mobile}"><DbDetails><where>c_tel='%{c_mobile}' or c_mobile='%{c_mobile}' or c_elsephone='%{c_mobile}'</where></DbDetails><submit next="ContactList" namelist="DbDetails" method="post"/><assign name="TB_Location" expr=""/></if></OnClick></Button>
+		<MagicCtrl Name="dialc_mobile" button="type:0" Link="tip:呼叫" images="data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{c_mobile}"/>
+		<Label Name="lb_phone"  Text="固定电话" Size="50,20"/>
+		<TextBox Name="c_tel" Size="100,20"/>        
+		<MagicCtrl Name="dialc_tel" button="type:0" Link="tip:呼叫" images="data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{c_tel}"/>
+	    <Label Name="lb_phonex"  Text="其他电话" Size="50,20"/>
+		<TextBox Name="c_elsephone" Size="100,20"/>
+		<BR/><Label Name="lb_addr"  Text="具体地址" Size="50,20"/>
+		<ComboBox Name="provinces" Size="80,200" Type="3" OnLoad="init">
+			<DbDetails><DbTable>narc</DbTable><Data>name,narc</Data><Where>narcp=0</Where></DbDetails>
+			<OnSELENDOK><if cond="%{provinces[narc]}"><if cond="%{provinces[narc]}!=%{narcprovince}"><assign name="narcprovince" expr="%{provinces[narc]}"/><submit next="areas"/></if></if></OnSELENDOK>
+			</ComboBox>
+		<ComboBox Name="areas" Size="80,200" Type="3">
+			<DbDetails><DbTable>narc</DbTable><Data>name,narc</Data><Where>narcp=%{provinces[narc]} and narcc=0</Where></DbDetails>
+			<OnSELENDOK><if cond="%{areas[narc]}"><if cond="%{areas[narc]}!=%{narcarea}"><assign name="narcarea" expr="%{areas[narc]}"/><submit next="citys"/></if></if></OnSELENDOK>
+			</ComboBox>
+		<ComboBox Name="citys" Type="3" Size="80,300">
+			<DbDetails><DbTable>narc</DbTable><Data>name,narc</Data><Where>narcc=%{areas[narc]}</Where></DbDetails></ComboBox>
+		<TextBox Name="c_address" Size="200,20"/>       
+		<Label Name="lb_post"  Text="邮编" Size="30,20" align="right"/>
+		<TextBox Name="c_zipCode" Number="true" Size="60,20"/>       
+		<BR/>
+		<Label Name="lb_location"  Text="归属地" Size="50,20" align="right"/>
+		<TextBox Name="TB_Location" Size="60,20" Text="">
+			<DbDetails>
+				<DbTable>*</DbTable>
+				<Index>h_id </Index>
+				<Data></Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select numlocal('%{custom.c_mobile}')</queryFormat>
+			</DbDetails>
+			</TextBox>
+		<Label Name="lb_viplevel"  Text="会员级别" Size="60,20" align="right"/>
+		<TextBox Name="viplevel" Visible="true" ReadOnly="1" tooltip="会员级别" Number="true" Size="50,20"/>       
+		<Label Name="lb_vipjf"  Text="会员积分" Size="60,20" align="right"/>
+		<TextBox Name="jf" Visible="true" ReadOnly="1" tooltip="会员积分"  Size="50,20"/>
+		<BR/><Label Name="lb_remark"  Text="备注" Size="50,20"/>
+		<TextBox Name="c_remark" Size="500,20"/>
+		<GroupBox Name="op" Text="操作" Size="100,100" overlap="TB_incallid"><Ctrls>
+		<Button Name="insert" Size="50,20" Text="保存" Clickneedconfirm="false"
+			OnClick="SetText(c_id, );SetText(TB_Location);sql:insert into shop_client_info (c_name,c_sex ,c_age ,c_mobile ,c_tel, c_elsephone ,c_address ,c_zipCode ,c_remark,c_indate,SeatsNo) values('%{c_name}','%{c_sex[SelectedIndex]}','%{c_age}','%{c_mobile}','%{c_tel}','%{c_elsephone}','%{c_address}','%{c_zipCode}','%{c_remark}',now(),'%{user_code}')">
+			<OnClick>
+			<if cond="%{c_id}"><alert next="lb_name" expr="请先清空数据"/>
+			<elseif cond="!%{c_name}"/><alert next="c_name" expr="%{lb_name}不能为空"/>
+			<elseif cond="%{c_sex[SelectedIndex]}&lt;0"/><alert next="c_name" expr="请选择性别"/>
+			<else/><DbDetails><queryFormat>insert into shop_client_info (c_name,c_sex ,c_age ,c_birthdate, c_mobile ,c_tel, c_elsephone ,c_address ,c_zipCode ,c_remark,c_indate,SeatsNo,SeatsName,c_cityid,id_corp) values('%{c_name}','%{c_sex[SelectedIndex]}','%{c_age}','%{c_birthdate}','%{c_mobile}','%{c_tel}','%{c_elsephone}','%{c_address}','%{c_zipCode}','%{c_remark}',now(),'%{user_code}','%{SeatsName}','%{citys[narc]}',%{id_corp})</queryFormat></DbDetails><submit next="insert" namelist="DbDetails" method="post"/>
+			<DbDetails><Where>SeatsNo='%{user_code}'</Where></DbDetails><submit next="ContactList" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<Button Name="update" Size="50,20" Text="修改" Clickneedconfirm="true"
+			OnClick="sql:Update shop_client_info set c_name='%{c_name}',c_sex='%{c_sex[SelectedIndex]}',c_age='%{c_age}',c_birthdate='%{c_birthdate}',c_mobile='%{c_mobile}',c_tel='%{c_tel}',c_elsephone='%{c_elsephone}',c_address='%{c_address}',c_zipCode='%{c_zipCode}',c_remark='%{c_remark}' where c_id=%{c_id}"></Button>
+		<BR/><Button Name="reset" Size="50,20" Text="清空数据" Clickneedconfirm="false"
+			OnClick="SetText(c_id,);SetText(c_name,);SetText(c_age,);SetText(c_mobile,);SetText(c_tel,);SetText(c_elsephone,);SetText(c_address,);SetText(c_zipCode,);SetText(c_remark,);SetText(viplevel, );SetText(jf,);SetText(TB_Location,)	;SetSel(CB_eyeill,-1);SetSel(CB_content,-1);SetSel(CB_media,-1);SetSel(CB_newCustomer,-1);SetSel(CB_callOrderType,-1);SetSel(TB_info,-1);SetText(TB_remarkh,)"></Button>
+		<Button Name="order" Size="50,20" Text="订购" Clickneedconfirm="false">
+			<OnClick><if cond="%{c_id}"><!--submit next="custom.orderinfo.TB_codeh" namelist="DbDetails" method="post"/-->
+			<assign name="custom.orderinfo.o_id" expr=" "/>
+			<assign name="custom.orderinfo.o_name" expr="%{custom.c_name}"/>
+			<assign name="custom.orderinfo.o_mobile" expr="%{custom.c_mobile}"/>
+			<assign name="custom.orderinfo.o_tel" expr="%{custom.c_tel}"/>
+			<assign name="custom.orderinfo.o_add" expr="%{custom.c_address}"/>
+			<assign name="custom.orderinfo.UserLst" expr="%{user_name}" function="SetSel"/>
+			<assign name="custom.orderinfo.o_remark" expr=""/>
+			<submit next="custom.orderinfo.OrderDetailList" method="post" function="resetcontent"/>
+			</if></OnClick></Button>
+		<BR/><Button Name="Add2Do" Size="50,20" Text="新任务">
+			<OnClick><if cond="%{c_id}"><DbDetails><Where>where c_id=%{c_id}</Where></DbDetails><submit next="todo.related2" namelist="DbDetails"/>
+			<submit next="todo.NewToDo" function="click"/><assign name="todo.related2" expr="%{c_name}" function="SetSel"/></if></OnClick></Button>
+		<BR/><Button Name="PrePage" Text="上一条" Size="50,20"	OnClick="(ContactList)GetPage(Pre)"/>
+		<Button Name="NextPage" Text="下一条" Size="50,20" OnClick="(ContactList)GetPage(Next)"/>
+		<ListCtrl Name="ContactList" Size="100,20"	Visible="0" Heading="匹配客户,100" PageSize="1" overlap="PrePage">
+			<DbDetails fcsm="1">
+				<DbTable>shop_client_info</DbTable>
+				<Index>c_id</Index>
+				<Data>c_name,c_id,c_sex,c_age ,c_birthdate,c_mobile ,c_tel, c_elsephone ,c_address ,c_zipCode,(select sum(o_zj) from shop_order where c_id=c_id and (o_state=4 or o_state=5)) as jf ,SeatsNo,c_remark</Data>
+				<Order>c_id desc</Order>
+				<Where>1</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where} limit %{StartRow},%{PgSize}</queryFormat> 
+			</DbDetails>
+			<OnClick>
+			<assign name="session.contactid" expr="%{ContactList[c_id]}"/>
+			<assign name="c_sex" expr="%{ContactList[c_sex]}"/>
+			</OnClick></ListCtrl>
+			</Ctrls></GroupBox></Ctrls></GroupBox>
+
+
+		    <BR AutoHeight="1"/><TAB/><ListCtrl Name="OrderList"  PageSize="10" Size="730,140"
+				OnLoad="" DataJoin="%{this}%{detail}" OnClick="SetText(TB_hdid,%9);"
+		            Heading="订单号,50;订单时间,100;审核状态,60;联系人,50;移动电话,80;固定电话,80;具体地址,160;总价,80;送货方式,80;货单号,100;购买目的,80;经办人,50;发票,20;时间,100;备注,100;">
+			<MDX id="detail">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_items as p on d.p_id=p.item_id inner join shop_order as o on o.o_id=d.o_id</DbTable>
+				<Index>h_id </Index>
+				<MDX>id,name,pnum</MDX>
+				<Data>d.o_id as id,concat(p.item_name,d.d_model) as name,sum(d.p_num) as pnum</Data>
+				<Order></Order>
+				<Where>where o.c_id=%{c_id}</Where>
+				<queryFormat>select %{data} from %{dbtable}    %{where} group by d.o_id,d.p_id,d.d_model</queryFormat> 
+			</DbDetails>
+			</MDX>
+			<DbDetails>
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs as s ON o.o_shfs = s.s_id LEFT OUTER JOIN shop_order_state as t ON o.o_state = t.id LEFT OUTER JOIN shop_gmmd as g ON o.o_gmmd = g.id</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id as 订单号,o.o_dt as 订单时间,t.state_desc 审核状态,o.o_name as 联系人,o.o_mobile as 移动电话,o.o_tel as 固定电话,o.o_add as 具体地址,o.o_zj as 总价,s.s_desc as 送货方式,o.o_hdid as 货单号,g.g_desc as 购买目的,o.o_jobno as 经手人,o.SeatsNo as 坐席号,o.o_fp as 发票,o.o_remark as 备注</Data>
+				<Order>o.o_id desc</Order>
+				<Where>where o.c_id=%{c_id}</Where>
+				<queryFormat>select %{data} from %{dbtable}  %{where} order by %{order}</queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+			<!--BR AutoHeight="1"/><TAB/><ListCtrl Name="HistoryList"  PageSize="10" Size="730,140" OnClick="SetText(TB_codeh,%{h_id});"
+				Heading="记录号,50;时间,100;信息分类,100;媒体调查,100;眼科疾病,80;咨询内容,80;进线新老分类,30;订购新老,30;客户号码,60;坐席号,20;备注,100;">
+			<DbDetails>
+				<DbTable>shop_history as h inner join shop_h_type as i on h.h_type=i.h_id inner join shop_meiti as m on h.h_mt=m.m_id left outer join shop.eyeill as e on h.h_eye_type=e.id left outer join shop_zx_concent as z on h.z_id=z.id left outer join shop.in_calltype as c on h.newcustomer=c.id left outer join shop.call_ordertype as o on h.callOrderType=o.id</DbTable>
+				<Index>h_id </Index>
+				<Data>h.h_id,h.h_dt,i.h_desc,m.m_desc,e.p_name,z.z_desc,c.typedesc, o.info_type,h.h_callerid,h.SeatsNo,h.h_remark</Data>
+				<Order>h.h_id desc</Order>
+				<Where>where c_id=%{c_id}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by h.h_id desc </queryFormat> 
+			</DbDetails>
+			</ListCtrl-->
+	      </Ctrls>      
+</WndTap>
+
+
+

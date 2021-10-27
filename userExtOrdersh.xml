@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+	<WndTap Name="userExtOrders" Text="成单率(日)">
+		<var name="sqlext" expr=""/>
+		<Ctrls>
+			<DateTime Name="DateTimeStart"  Format="yyyy-MM-dd HH:mm" Size="120,20"></DateTime>
+			<DateTime Name="DateTimeEnd"  Format="yyyy-MM-dd HH:mm" Size="120,20"></DateTime>
+			<Button Name="search" Size="50,20" Text="统计">
+		<OnClick><if cond="SeatsLevel&lt;3"><assign name="sqlext" expr=" and SeatsInfo.seatsgroup=%{SeatsGroup}"/>
+			<else/><assign name="sqlext" expr=""/></if>
+			<DbDetails></DbDetails><submit next="meidaAnalysisLst" namelist="DbDetails" method="post"/></OnClick></Button>
+			<ComboBox Name="GroupLst" Visible="false" Enabled="true" OnLoad="sql:select distinct seatsgroup from seatsinfo"
+			Size="120,60" SelectedIndex="0">
+			</ComboBox>
+	        <Button Name="searchGrp" Visible="false" Enabled="true" Size="60,20" Text="组统计">
+		<OnClick>	<assign name="sqlext" expr=" and SeatsInfo.seatsgroup=%{GroupLst}"/><DbDetails></DbDetails><submit next="meidaAnalysisLst" namelist="DbDetails" method="post"/></OnClick></Button>
+	        <Button Name="export"  Size="60,20" Text="导出">
+		<OnClick>	<Save></Save><submit next="meidaAnalysisLst" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/><ListCtrl Name="meidaAnalysisLst"  
+		Heading="座席号,50;订购数,50;进线数,50;成单率,20;眼贴,20;蓝莓,20;回线数,50;" DataJoin="%{this}%{incalls}%{info}"
+		Size="600,500">
+			<MDX id="info" datatype="string">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id inner join shop_product as p on p.p_id=d.p_id</DbTable>
+				<Index>o_id</Index>
+				<MDX>坐席号,,</MDX>
+				<Data>o.o_jobno as 坐席号,sum(case when p.p_name=14 then d.p_num else 0 end) as 眼贴,sum(case when p.p_name=23 then d.p_num else 0 end) as 蓝霉</Data>
+				<Order>shop_order.o_id desc</Order>
+				<Where>o_dt between '%{DateTimeStart}' and '%{DateTimeEnd}' and o_state!=2</Where>
+				<queryFormat>select * from (select %{data} from %{dbtable}  where %{where} group by o_jobno) as b </queryFormat> 
+			</DbDetails>
+			</MDX>
+			<MDX id="incalls" datatype="string">
+			<DbDetails>
+				<DbTable>*</DbTable>
+				<Index>h_id </Index>
+				<MDX>坐席号,,</MDX>
+				<Data>s.SeatsNo as 坐席号,count(g.callerid) as 进线数</Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select %{data} from (select distinct callerid,max(calledid) as calledid,max(cdrid) as cdrid from gwcalls where starttime&gt;'%{DateTimeStart}' and starttime&lt;'%{DateTimeEnd}' and calleeid!='' and duration!=0  group by callerid) as g inner join gwcalls as gw on g.cdrid=gw.cdrid inner join userlogin as u on gw.calledid=u.user_name inner join seatsinfo as s on u.agentid=s.ID %{where} group by seatsNo</queryFormat> 
+			</DbDetails>
+			</MDX>
+			<DbDetails>
+				<DbHost></DbHost>
+				<DbDatabase></DbDatabase>
+				<DbSubDriver></DbSubDriver>
+				<DbUser></DbUser>
+				<DbPassword></DbPassword>
+				<DbTable>(select * from shop_history where  h_dt between '%{DateTimeStart}' and '%{DateTimeEnd}') as h left outer join SeatsInfo on SeatsInfo.SeatsNo=h.seatsno</DbTable>
+				<Index> </Index>
+				<!--MDX>座席号,typedesc(新|老|拜访来电|断线|重复进线),cnts</MDX-->
+				<Data>h.seatsno as 坐席号,sum(case when h.callOrderType&lt;4 then 1 else 0 end) as 订购数,sum(case when h.h_mt=40 then 0 else 1 end) as 回线数,convert(float,sum(case when h.callOrderType&lt;4 then 1 else 0 end))/convert(float,count(*)) as 成单率 </Data>
+				<Order></Order>
+				<Where>(h_mt&lt;28 or h_mt&gt;33) %{sqlext}</Where>
+				<queryFormat>select %{data} from %{dbtable}  where %{where} group by h.seatsno order by 订购数 desc</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	      </Ctrls>
+		<OnActivate><if cond="SeatsLevel&gt;2"><SetVisible name="GroupLst" Visible="1"/><SetVisible name="searchGrp" Visible="1"/>
+		</if>
+		</OnActivate>
+	    </WndTap>

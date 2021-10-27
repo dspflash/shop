@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<GroupBox Name="GroupBox1"  Text="订单信息" Size="30,20"><Ctrls>     
+		<Label Name="lb_name"  Text="收货人姓名" Size="60,20"/>
+		<TextBox Name="o_name" Size="60,20"/>        
+		<Label Name="lb_moblie"  Text="移动电话" Size="60,20"/>
+		<TextBox Name="o_mobile" Size="60,20"/>        
+		<Label Name="lb_phone"  Text="固定电话" Size="60,20"/>
+		<TextBox Name="o_tel" Size="60,20"/>
+		<Label Name="lb_jobuser"  Text="经手人" Size="60,20" align="right"/>
+		<ComboBox Name="UserLst"  
+			OnLoad="sql:select user_name,user_code from userlogin where id_corp='%{id_corp}' order by user_code" Size="60,20" SelectedIndex="-1"></ComboBox>
+		<TextBox Name="o_dt" Size="120,20" readonly="1" tooltip="订单时间"/>       
+    <BR/><Label Name="lb_addr"  Text="具体地址" Size="60,20"/>
+		<TextBox Name="o_add" Size="400,20"/>       
+		<TAB/>
+      	<TextBox Name="o_id" Visible="false" Enabled="false" ReadOnly="false" Size="30,20">
+			<OnEnChange><if cond="%{o_id}"><DbDetails></DbDetails><submit next="OrderDetailList" namelist="DbDetails" method="post"/>
+			<else/><submit next="OrderDetailList" method="post" function="resetcontent"/></if></OnEnChange>
+			</TextBox>        
+		<TextBox Name="TB_codeh" Visible="false" Enabled="true" ReadOnly="false" Size="30,20">
+			<DbDetails>
+				<queryFormat>select h_id from shop_history where c_id=%{custom.TB_code} and SeatsNo='%{user_code}' order by h_id desc limit 0,1</queryFormat> 
+			</DbDetails>
+			</TextBox> 
+		<BR/><Label Name="lb_remark"  Text="备注" Size="60,20"/>
+		<TextBox Name="o_remark" Size="400,20"/>
+		<BR/><Label Name="lb_shfs"  Text="送货方式" Size="60,20"/>
+		<ComboBox Name="CB_shfs" OnLoad="sql:select s_desc ,s_id  from shop_shfs where s_state=1" Size="120,20" SelectedIndex="0"></ComboBox>
+		<Label Name="lb_tdreason"  Text="购买目的" Size="60,20"/>
+		<ComboBox Name="CB_tdreason" OnLoad="sql:select g_desc,id from shop_gmmd" Size="120,20" SelectedIndex="0"></ComboBox>
+		<Label Name="lb_fp"  Text="发票" Size="30,20"/>
+		<ComboBox Name="CB_fp"  Items="否|是" Size="60,20" SelectedIndex="0"></ComboBox>
+	<BR/><GroupBox Name="ordergoods"  Text="订单商品信息" Size="60,20"><Ctrls>
+		<TextBox Name="TB_codep" Visible="false" Enabled="false" ReadOnly="false" Size="60,20"></TextBox>
+		<Label Name="lb_namep"  Text="商品名称" Size="60,20" overlap="pre"/>
+		<ComboBox Name="products" SelectedIndex="0" Size="120,20" OnLoad="init">
+			<DbDetails><queryFormat>select item_name,item_id,item_price from shop_items where id_corp=%{id_corp} and sku_number</queryFormat></DbDetails>
+			<OnSelChange><if cond="%{products[item_id]}"><submit next="prod_prop"/></if><SetEnabled name="selmodel" enabled="0"/>
+			<assign name="p_num" expr="0"/></OnSelChange>
+			</ComboBox>
+			<Button Name="refreshProducts"   Size="50,20" Text="刷新" >
+			<OnClick>
+				<submit next="products" method="post"/>
+			</OnClick></Button>
+		<Label Name="lb_prop" Size="60,20" Text="规格型号" align="right"></Label>
+		<ComboBox Name="prod_prop" SelectedIndex="-1" Size="60,120" ToolTip="产品参数">
+			<DbDetails>
+				<DbTable>shop_properties as p inner join shop_itemprop as ip on p.property_id=ip.id_prop</DbTable>
+				<Data>p.prop_display_name,property_id</Data>
+				<Where>ip.id_item=%{products[item_id]}</Where>
+				</DbDetails>
+			<OnSelEndOk><if cond="%{prod_prop[property_id]}"><submit next="prod_prop_list"/><submit next="prod_prop_prices"/>
+			<else/><submit next="prod_prop_list" function="resetcontent"/><submit next="prod_prop_prices" function="resetcontent"/>
+			</if></OnSelEndOk>
+			</ComboBox>
+		<ComboBox Name="prod_prop_list" SelectedIndex="0" Size="50,120" ToolTip="参数表">
+			<DbDetails>
+				<queryFormat>select prop_list from shop_properties where property_id=%{prod_prop[property_id]} and id_corp=%{id_corp}</queryFormat>
+				</DbDetails>
+			<OnSelEndOk><assign name="prod_prop_prices[SelectedIndex]" expr="%{prod_prop_list[SelectedIndex]}" function="setsel"/>
+				<if cond="%{prod_prop_list}"><SetEnabled name="selmodel" enabled="1"/><else/><SetEnabled name="selmodel" enabled="0"/></if></OnSelEndOk>
+			</ComboBox>
+		<ComboBox Name="prod_prop_prices" SelectedIndex="0" Size="40,120" ToolTip="对应价格调整表" enabled="0">
+			<DbDetails>
+				<queryFormat>select prop_prices from shop_properties where property_id=%{prod_prop[property_id]} and id_corp=%{id_corp}</queryFormat>
+				</DbDetails></ComboBox>
+		<Button Name="selmodel" Size="30,20" Text="选择">
+			<OnClick><if cond="%{prod_prop[property_id]}"><assign name="prod_prop[model]" expr="%{prod_prop_list}" function="setvalue"/>
+			<assign name="prod_prop[price]" expr="%{prod_prop_prices}" function="setvalue"/>
+			<assign name="products[model]" expr="" function="SetValue"/><assign name="products[priced]" expr="0" function="SetValue"/>
+			<foreach><assign name="products[model]" expr="%{products[model]};%{prod_prop[model]}" function="SetValue"/>
+				<if cond="'%{prod_prop[price]}'"><assign name="products[priced]" expr="%{products[priced]}+(%{prod_prop[price]})" function="SetValue"/></if></foreach>
+			<Submit next="prod_prop" namelist="foreach" function="foreach"/></if></OnClick></Button>
+		<BR/><Label Name="lb_num"  Text="数量" Size="60,20"/>
+		<TextBox Name="p_num" number="1" Size="60,20" Text="0">
+			<OnEnChange>
+				<if cond="%{p_num}"><if cond="!%{prod_prop[itemcount]}"><assign name="TB_total" expr="%{p_num}*%{products[item_price]}"/><else/><assign name="TB_total" expr="%{p_num}*(%{products[item_price]}+(%{products[priced]}))"/></if>
+			<else/><assign name="TB_total" expr="0"/></if></OnEnChange></TextBox>
+		<Label Name="lb_total"  Text="总价" Size="60,20" align="right"/>
+		<TextBox Name="TB_total" Size="60,20"/>
+		<TAB/><Button Name="insertp" Size="60,20" Text="添加商品" >
+			<OnClick><if cond="!%{o_id}"><alert next="xx" expr="不能为空订单添加商品，请先创建订单"/>
+			<elseif cond="%{CB_orderState[id]}!=0"/><alert next="xx" expr="只能修改未确认订单"/>
+			<elseif cond="%{CB_Discount[state]}==0"/><alert next="xx" expr="该折扣目前被禁用，请选择其他折扣！"/>
+			<elseif cond="%{p_num}!=0"/>
+			<DbDetails><queryFormat>insert into shop_order_detail (o_id ,p_id ,p_num,p_dj,p_zp,d_model,d_modeldelta) values(%{o_id},%{products[item_id]},%{p_num},%{products[item_price]},%{TB_total},'%{products[model]}','%{products[priced]}');</queryFormat></DbDetails><submit next="insertp" namelist="DbDetails" method="post"/>
+			<submit next="OrderDetailList"/><submit next="o_zj"/><submit next="o_cjj"/>
+			<assign name="p_num" expr="0"/><assign name="TB_total" expr="0"/></if></OnClick></Button>
+		<Button Name="delp" Size="60,20" Text="删除商品">
+			<OnClick><if cond="%{CB_orderState[id]}!=0"><alert next="xx" expr="只能修改未确认订单"/>
+			<elseif cond="%{CB_Discount[state]}==0"/><alert next="xx" expr="该折扣目前被禁用，请选择其他折扣！"/>
+			<else/><import button="export" selected="1">sql:delete from shop_order_detail where d_id=%{OrderDetailList[d_id]};</import><submit next="OrderDetailList" namelist="import" method="post" function="import"/>
+			<DbDetails></DbDetails><submit next="OrderDetailList" namelist="DbDetails" method="post"/><submit next="o_zj" namelist="DbDetails" method="post"/><submit next="o_cjj" namelist="DbDetails" method="post"/>
+			<assign name="p_num" expr="0"/><assign name="TB_total" expr="0"/></if></OnClick></Button></Ctrls></GroupBox>
+		<BR AutoHeight="1"/><ListCtrl Name="OrderDetailList" PageSize="10" Size="560,120" loadedclick="false"
+			OnClick=""
+		            Heading="产品名称,50;型号,50;数量,50;单价,50;总价,50;代金券,30;订单号,50;产品ID,50;编码,20;">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_items as p on d.p_id=p.item_id</DbTable>
+				<Index>d_id</Index>
+				<Data>p.item_name,d.d_model,d.p_num,d.p_dj,d.p_zp,d.d_decrease,d.o_id,d.p_id,d.d_id</Data>
+				<Order>d.d_id desc</Order>
+				<Where>where d.o_id=%{o_id}</Where>
+				<queryFormat>select %{data} from %{dbtable}  %{where} limit %{StartRow},%{PgSize} </queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+		<GroupBox Name="ginfo"  Text="总体信息" Size="60,20" overlap="TB_codeh"><Ctrls>
+		<ComboBox Name="CB_orderState" Visible="true" Enabled="false" Items=""
+ 			OnLoad="sql:select state_desc,id from shop_order_state" Size="60,20" SelectedIndex="0"></ComboBox>
+		<!--BR/><Label Name="lb_totalOrder"  Text="订单总价" Size="60,20"/-->
+		<BR/><TextBox Name="o_cjj" ToolTip="市场价" Size="60,20" Text="0">
+				<DbDetails>
+				<DbTable>shop_order o</DbTable>
+				<Index>o_id</Index>
+				<Order></Order>
+				<queryFormat>select o_cjj from %{dbtable}  where o_id=%{o_id}</queryFormat> 
+				</DbDetails>
+			</TextBox>   
+		<BR/><ComboBox Name="CB_Discount" OnLoad="sql:select dc_desc,state from shop_discount" ToolTip="订单折扣" Size="60,120" SelectedIndex="0">
+				<OnSelChange>
+				<if cond="%{CB_Discount[state]}==1"><SetEnabled name="insertp" enabled="1"/><SetEnabled name="delp" enabled="1"/>
+				<else/><SetEnabled name="insertp" enabled="0"/><SetEnabled name="delp" enabled="0"/>
+				</if>
+				</OnSelChange></ComboBox>
+		<BR/><TextBox Name="o_zj" ToolTip="折后价" Size="60,20" Text="0">
+				<DbDetails>
+				<DbTable>shop_order o</DbTable>
+				<Index>o_id</Index>
+				<Order></Order>
+				<queryFormat>select o_zj from %{dbtable}  where o_id=%{o_id}</queryFormat> 
+				</DbDetails>
+			</TextBox>   
+		<!--BR/><Label Name="lb_hdid"  Text="货单号" Size="60,20" align="right"/-->
+		<BR/><TextBox Name="o_hdid" Size="60,20" ToolTip="货单号"/>
+				</Ctrls></GroupBox></Ctrls></GroupBox>
+
+

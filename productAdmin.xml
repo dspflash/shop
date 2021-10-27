@@ -1,0 +1,56 @@
+<WndTap Name="productAdmin" Text="商品管理"><!--update shop_product set iAlert=1-->
+	<Ctrls><GroupBox Name="GroupBox1" Size="80,20"  Text="商品"><Ctrls>        
+		<Label Name="lb_name" Size="80,20" Text="商品名称" align="right"></Label>
+		<TextBox Name="TB_name" Size="80,20" Text=""></TextBox>        
+		<Label Name="lb_xh" Size="80,20" Text="商品型号" align="right"></Label>
+		<TextBox Name="TB_xh" Size="80,20" Text=""></TextBox>        
+		<Label Name="lb_price" Size="80,20" Text="价格" align="right"></Label>
+		<TextBox Name="TB_price" Size="80,20" Text=""></TextBox>        
+		<BR/><Label Name="lb_namep"  Text="商品名称" Size="80,20" align="right"/>
+		<ComboBox Name="CB_name" SelectedIndex="0"
+			OnLoad="sql:select shop_p_name.p_name,shop_p_name.p_id from shop_p_name where shop_p_name.p_state=1"
+			OnSelChange="(CB_price)sql:select p_dj,p_id from shop_product where p_name=%{CB_name[p_id]} and iAlert=1;(CB_xinghao)sql:select x_desc,id from shop_xinghao where p_name=%{CB_name[p_id]}"
+           Size="80,120"/>        
+		<Label Name="lb_xinghao"  Text="型    号" Size="80,20" align="right"/>
+		<ComboBox Name="CB_xinghao"  Size="80,120" SelectedIndex="0">
+			<OnSelChange><if cond="%{CB_xinghao}">
+			<DbDetails><queryFormat>select p_dj,p_id from shop_product where p_name=%{CB_name[p_id]} and p_xh=%{CB_xinghao[id]} and iAlert=1</queryFormat></DbDetails><submit next="CB_price" namelist="DbDetails" method="post"/>
+			</if></OnSelChange></ComboBox>
+		<Label Name="lb_price"  Text="单价" Size="80,20" align="right"/>
+		<ComboBox Name="CB_price"  Size="80,120" SelectedIndex="0"></ComboBox>
+		<BR/><ListCtrl Name="ppList"  PageSize="10" Size="400,400" loadedclick="false" OnClick="" OnLoad="init"
+          Heading="产品,80;型号,80;单价,80;状态,80;">
+			<DbDetails>
+				<DbTable> shop_product as p inner join shop_p_name as n on p.p_name=n.p_id left outer join shop_xinghao as t on p.p_xh=t.id</DbTable>
+				<Index>d_id</Index>
+				<Data>n.p_name,t.x_desc,p.p_dj,p.iAlert,p.p_id</Data>
+				<Order></Order>
+				<Where>n.p_state=1</Where>
+				</DbDetails>
+			</ListCtrl>
+		<TAB/><GroupBox Name="GBOP" Size="80,20" Text="操作"><Ctrls>
+		<Button Name="insert"   Size="80,20" Text="添加商品" 
+			OnClick="sql:insert into shop_p_name (p_name,p_state) values('%{TB_name}',1);(CB_name)sql:select shop_p_name.p_name,shop_p_name.p_id from shop_p_name where shop_p_name.p_state=1"></Button>
+		<BR/><Button Name="insertxh"   Size="80,20" Text="添加型号" 
+			OnClick="sql:insert into shop_xinghao (x_desc,p_name) values('%{TB_xh}',%{CB_name[p_id]})"></Button>
+		<BR/><Button Name="insertprice"  Size="80,20" Text="添加价格" 
+			OnClick="sql:insert into shop_product (p_dj,p_name,p_xh,iAlert ) values('%{TB_price}',%{CB_name[p_id]},'%{CB_xinghao[id]}',1)"></Button>
+		<BR/><Button Name="disabled"   Size="80,20" Text="禁用" tooltip="禁用产品名称，相关型号价格将不显示"
+			OnClick="sql:update shop_p_name set p_state=0 where p_id =%{CB_name[p_id]};(CB_name)sql:select shop_p_name.p_name,shop_p_name.p_id from shop_p_name where shop_p_name.p_state=1"></Button>
+		<BR/><Button Name="disabledPrice"   Size="80,20" Text="禁用产品价格">
+			<OnClick>
+				<DbDetails><queryFormat>update shop_product set iAlert=0 where p_id =%{ppList[p_id]}</queryFormat></DbDetails><submit next="disabledPrice" namelist="DbDetails" method="post"/>
+				<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		<BR/><Button Name="enabledPrice"   Size="80,20" Text="启用产品价格" >
+			<OnClick>
+				<DbDetails><queryFormat>update shop_product set iAlert=1 where p_id =%{ppList[p_id]}</queryFormat></DbDetails><submit next="enabledPrice" namelist="DbDetails" method="post"/>
+				<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		<BR/><Button Name="refreshPrice"   Size="80,20" Text="刷新" >
+			<OnClick>
+				<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+			</Ctrls></GroupBox>
+	</Ctrls></GroupBox></Ctrls>
+	</WndTap>

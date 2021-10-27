@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderinfo" Text="订单信息"><Ctrls>
+	<xi:include href="odrb.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>	
+	<BR AutoHeight="1"/><TAB/><ListCtrl Name="OrderList" PageSize="1" Size="560,100" ToolTip="订单列表" Visible="0"
+		Heading="订单号,50;联系人,50;订单时间,100;移动电话,80;固定电话,80;具体地址,160;总价,80;送货方式,80;货单号,100;购买目的,80;经办人,50;审核状态,60;付款方式,20;备注,100;"
+		OnClick="SetSel(CB_shfs,%{s_desc});SetSel(CB_tdreason,%{g_desc});SetSel(CB_orderState,%{state_desc});SetSel(CB_fp,%{o_fp});SetSel(UserLst,%{o_jobno}));SetSel(CB_Discount,%{dc})">
+			<DbDetails fcsm="1">
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs as s ON o.o_shfs = s.s_id LEFT OUTER JOIN shop_order_state as t ON o.o_state = t.id LEFT OUTER JOIN shop_gmmd as g ON o.o_gmmd = g.id</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id,o.o_name,o.o_dt,o.o_mobile,o.o_tel,o.o_add,o.o_zj,s.s_desc,o.o_hdid,g.g_desc,o.o_jobno,t.state_desc,o.o_fp,o.o_remark,o.o_cjj,100-o.o_nudiscount as dc</Data>
+				<Order>o.o_id desc</Order>
+				<Where>where c_id=%{session.contactid}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit %{StartRow},%{PgSize} </queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+	<Label name="locodrop" Size="120,20" overlap="ginfo"/><GroupBox Name="orderop"  Text="订单处理" Size="60,20"><Ctrls>
+		<Button Name="insert"  Clickneedconfirm="true" Size="60,20" Text="新订单" >
+			<OnClick><if cond="!%{session.contactid}"><alert next="insert" expr="请先选择客户"/>
+				<elseif  cond="%{UserLst[SelectedIndex]}&lt;0"/><alert next="UserLst" expr="请选择经手人"/>
+				<elseif  cond="%{CB_shfs[SelectedIndex]}&lt;0"/><alert next="CB_shfs" expr="请选择送货方式"/>
+				<elseif  cond="%{CB_tdreason[SelectedIndex]}&lt;0"/><alert next="CB_shfs" expr="请选择购买目的"/>
+				<elseif  cond="%{CB_fp[SelectedIndex]}&lt;0"/><alert next="CB_fp" expr="请选择发票"/>
+				<elseif  cond="%{CB_Discount[SelectedIndex]}&lt;0"/><alert next="CB_Discount" expr="请选择折扣"/>
+				<else/>
+				<DbDetails fcsm="1">
+					<DbTable>shop_order</DbTable>
+					<Data>o_name,o_mobile ,o_tel, o_add ,o_remark</Data>
+					<DataEx>c_id,c_clientId,o_sex,o_age,o_shfs,o_gmmd,o_fp,o_dt,SeatsNo,SeatsName,o_jobno,o_nudiscount;%{session.contactid},'%{custom.c_name}',%{custom.c_sex[SelectedIndex]},%{custom.c_age},%{CB_shfs[s_id]},%{CB_tdreason[id]},%{CB_fp[SelectedIndex]},now(),'%{user_code}','%{SeatsName}','%{UserLst[user_code]}',100-%{CB_Discount}</DataEx>
+					<queryFormat>Insert into %{dbtable} %{data}</queryFormat>
+					</DbDetails><submit namelist="DbDetails" method="post"/>
+			<DbDetails><Where>where c_id=%{session.contactid}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/></if></OnClick></Button>
+		<BR/><Button Name="update"  Clickneedconfirm="true" Size="60,20" Text="修改" >
+			<OnClick><if cond="!%{o_id}"><alert next="xx" expr="订单为空，不能修改"/>
+			<elseif cond="%{CB_orderState[id]}!=0"/><alert next="xx" expr="只能修改未确认订单"/>
+			<else/>
+				<DbDetails fcsm="1">
+					<DbTable>shop_order</DbTable>
+					<Data>h_id,o_name,o_mobile ,o_tel, o_add ,o_remark</Data>
+					<DataEx>o_shfs=%{CB_shfs[s_id]},o_gmmd=%{CB_tdreason[id]},o_fp=%{CB_fp[SelectedIndex]},o_jobno='%{UserLst[user_code]}',o_nudiscount=100-%{CB_Discount},o_zj=floor(o_cjj*(100-o_nudiscount)/100)</DataEx>
+					<queryFormat>Insert into %{dbtable} %{data}</queryFormat>
+				<queryFormat>Update %{dbtable} set %{data} where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="update" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where o_id=%{o_id}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+				</if></OnClick></Button>
+		<BR/><Button Name="search"  Size="60,20" Text="查找">
+			<OnClick><DbDetails><Where>where c_id=%{session.contactid}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<BR/><Button Name="PrePage" Size="60,20" Text="上一条" OnClick="(OrderList)GetPage(Pre)"></Button>
+		<BR/><Button Name="NextPage" Size="60,20" Text="下一条" OnClick="(OrderList)GetPage(Next)"></Button>
+		<BR/><Button Name="confirm"  Clickneedconfirm="true" Size="60,20" Text="确认订单">
+			<OnClick><if cond="%{CB_orderState[id]}!=0"><alert next="xx" expr="只能确认未确认订单"/><else/>
+			<DbDetails><queryFormat>Update shop_order set o_state=1,qr_dt=now() where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="confirm" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		<BR/><Button Name="cancel"  Clickneedconfirm="true" Size="60,20" Text="取消订单">
+			<OnClick><if cond="%{CB_orderState[id]}!=0"><alert next="xx" expr="只能取消未确认订单"/><else/>
+			<DbDetails><queryFormat>Update shop_order set o_state=2,o_cancel_date=now() where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="cancel" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+			</if></OnClick></Button>
+		</Ctrls></GroupBox>
+</Ctrls></WndTap>
+
+
+

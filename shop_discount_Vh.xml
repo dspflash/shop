@@ -1,0 +1,12 @@
+﻿<GroupBox Name="GBDVshop_discount" cols="xs12 sm12 md12 lg12" visible="0"><Ctrls>
+<ListCtrl Name="shop_discountLst" ToolTip="ttp_shop_discount" Size="70,20" visible="0" loadedclick="1">
+	<DbDetails fcsm="1">
+<DbTable>mylayout.shop_discount</DbTable>
+<Index>id</Index>
+<Data>dc_desc,state,remark,id</Data>
+<Order>id</Order></DbDetails>
+<OnClick>
+<if cond="%{id}"><SetVisible name="insertshop_discount" Visible="0"/><SetVisible name="modifyshop_discount" Visible="1"/></if>
+</OnClick>
+</ListCtrl>
+</Ctrls></GroupBox>

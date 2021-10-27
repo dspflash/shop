@@ -1,0 +1,91 @@
+<WndTap Name="propertyAdmin" Text="商品管理">
+	<var name="proplf" expr=""/>
+	<var name="proplv" expr=""/>
+	<Ctrls><GroupBox Name="GB" Size="80,20"  Text="商品"><Ctrls>        
+		<Label Name="lb_category"  Text="商品目录" Size="60,20" align="right"/>
+		<ComboBox Name="category" Type="2" Size="100,120" SelectedIndex="0" Onload="init">
+			<DbDetails><queryFormat>select category_name,category_id from shop_item_categories where id_corp=%{id_corp}</queryFormat></DbDetails>
+			</ComboBox>
+		<Button Name="addcg" Text="新增" Size="30,20" ToolTip="增加商品目录">
+			<OnClick>
+				<if cond="!%{category[windowtext]}"><alert next="TB_name" expr="%{lb_category}不能为空"/>
+				<else/>
+				<DbDetails><queryFormat>insert into shop_item_categories (category_name,id_corp) values ('%{category[windowtext]}',%{id_corp})</queryFormat></DbDetails><submit namelist="DbDetails"/>
+				<DbDetails/><submit next="category" namelist="DbDetails"/>
+				</if></OnClick>
+			</Button>
+		<Label Name="lb_name" Size="60,20" Text="商品名称" align="right"></Label>
+		<TextBox Name="item_name" Size="100,20" Text=""></TextBox>        
+		<Label Name="lb_price" Size="60,20" Text="商品价格" align="right"></Label>
+		<TextBox Name="item_price" Size="80,20"/>        
+		<TAB/><GroupBox Name="GBOP" Size="80,20" Text="操作"><Ctrls>
+		<Button Name="insert"   Size="50,20" Text="添加">
+			<OnClick>
+				<DbDetails fcsm="1">
+					<data>item_name,item_description,item_price,sku_number,shipping_first_item,shipping_additional_item,handling_override</data>
+					<dataEx>category_id,item_active_status,id_corp;%{category[category_id]},1,%{id_corp}</dataEx>
+					<queryFormat>insert into shop_items %{data}</queryFormat></DbDetails><submit namelist="DbDetails"/>
+				<submit next="products" method="post"/>
+			</OnClick></Button>
+		<Button Name="disabledPrice"   Size="50,20" Text="删除">
+			<OnClick>
+				<DbDetails><queryFormat>update shop_items set %{data} where p_id =%{products[p_id]}</queryFormat></DbDetails><submit namelist="DbDetails"/>
+				<submit next="products" method="post"/>
+			</OnClick></Button>
+		<BR/><Button Name="refreshPrice"   Size="50,20" Text="刷新" >
+			<OnClick>
+				<submit next="products" method="post"/>
+			</OnClick></Button>
+			</Ctrls></GroupBox>
+		<BR/><Label Name="lb_xh" Size="60,20" Text="商品描述" align="right"></Label>
+		<TextBox Name="item_description" Size="290,20" Text="" ></TextBox>        
+		<Label Name="lb_sku_number"  Text="库存数量" Size="60,20" align="right"/>
+		<TextBox Name="sku_number" Size="80,20" Text="" ></TextBox>        
+		<BR/><Label Name="lb_shipping_first_item" Size="60,20" Text="首件运费" align="right"></Label>
+		<TextBox Name="shipping_first_item" Size="80,20" Text="0"/>        
+		<Label Name="lb_shipping_additional_item" Size="60,20" Text="加件运费" align="right"></Label>
+		<TextBox Name="shipping_additional_item" Size="80,20" Text="0" ToolTip="每增加一件增加的运费"/>        
+		<Label Name="lb_handling_override" Size="60,20" Text="手 续 费" align="right"></Label>
+		<TextBox Name="handling_override" Size="80,20" Text="0" ToolTip=""/>        
+		<BR/><ListCtrl Name="products"  PageSize="10" Size="400,400" loadedclick="false" OnClick="" OnLoad="init"
+          Heading="产品,80;型号,80;单价,80;状态,80;">
+			<DbDetails>
+				<DbTable>shop_items</DbTable>
+				<Index>d_id</Index>
+				<Data>*</Data>
+				<Order></Order>
+				<Where>id_corp=%{id_corp}</Where>
+				</DbDetails>
+			<OnClick><if cond="!%{products[item_id]}"><submit next="properties" function="resetcontent"/><else/>
+					<submit next="properties"/>
+			</if></OnClick>
+			</ListCtrl>
+		<TAB/><GroupBox Name="GBPROP" Size="80,20" Text="商品规格型号"><Ctrls>
+		<Label Name="lb_prop" Size="60,20" Text="规格型号" align="right"></Label>
+		<ComboBox Name="prod_prop" SelectedIndex="-1" Size="80,120" ToolTip="产品参数" OnLoad="init">
+			<DbDetails fcsm="1">
+					<queryFormat>select prop_display_name,property_id,prop_list,prop_prices from shop_properties where id_corp=%{id_corp}</queryFormat></DbDetails>
+			<OnSelEndOk><if cond="%{prod_prop[property_id]}"><submit next="prod_prop_list"/><submit next="prod_prop_prices"/>
+			</if></OnSelEndOk>
+			</ComboBox>
+		<Button Name="insertprop" Size="50,20" Text="添加">
+			<OnClick><if cond="!%{products[item_id]}"><alert expr="请选择需要添加规格型号的产品"/><else/>
+				<DbDetails>
+					<queryFormat>insert into shop_itemprop (id_item,id_prop) values (%{products[item_id]},%{prod_prop[property_id]})</queryFormat></DbDetails><submit namelist="DbDetails"/>
+			</if></OnClick></Button>
+		<BR/><TextBox Name="prop_list" Size="200,20" ToolTip="参数表" ReadOnly="1"/>
+		<BR/><TextBox Name="prop_prices" Size="200,20" ToolTip="对应价格调整表" ReadOnly="1"/>
+		<BR/><ListCtrl Name="properties"  PageSize="10" Size="200,100" loadedclick="false" OnClick="" OnLoad="init"
+          Heading="属性,80;可选列表,80;对应价格调整,80;">
+			<DbDetails>
+				<DbTable>shop_properties as p inner join shop_itemprop as ip on p.property_id=ip.id_prop</DbTable>
+				<Index>d_id</Index>
+				<Data>p.prop_display_name,p.prop_list,p.prop_prices</Data>
+				<Order></Order>
+				<Where>ip.id_item=%{products[item_id]}</Where>
+				</DbDetails>
+			</ListCtrl>
+			</Ctrls></GroupBox>
+
+	</Ctrls></GroupBox></Ctrls>
+	</WndTap>

@@ -1,0 +1,18 @@
+﻿<GroupBox Name="GBDEDITshop_discount"><Ctrls>
+<GroupBox Name="GB_dc_desc" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_dc_desc" Size="60,20" Text="dc_desc" Align="Right"/>
+<TextBox Name="dc_desc" Size="170,20" Text="" Weight="170" ToolTip="ttp_dc_desc"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_state" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_state" Size="60,20" Text="state" Align="Right"/>
+<ComboBox Name="state" Size="170,100" Text="" Weight="170" Items="禁用|启用" ToolTip="ttp_state"></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_remark" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_remark" Size="60,20" Text="remark" Align="Right"/>
+<TextBox Name="remark" Size="170,20" Text="" Weight="170" ToolTip="ttp_remark"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_id" Multiline="0" cols="xs12 sm6 md4 lg3" Visible="false" overlap="pre"><Ctrls>
+<Label Name="lb_id" Size="60,20" Text="id" Align="Right" Visible="false" overlap="pre" readonly="true"/>
+<TextBox Name="id" Size="170,20" Text="" Weight="170" ToolTip="ttp_id" Visible="false" overlap="pre" readonly="true"><OnEnChange><if cond="'%{id}'"><SetVisible name="insertshop_discount" Visible="0"/><SetVisible name="modifyshop_discount" Visible="1"/><else/><SetVisible name="insertshop_discount" Visible="1"/><SetVisible name="modifyshop_discount" Visible="0"/></if></OnEnChange></TextBox>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>

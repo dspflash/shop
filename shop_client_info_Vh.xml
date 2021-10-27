@@ -1,0 +1,12 @@
+﻿<GroupBox Name="GBDVshop_client_info" cols="xs12 sm12 md12 lg12" visible="0"><Ctrls>
+<ListCtrl Name="shop_client_infoLst" ToolTip="ttp_shop_client_info" Size="70,20" visible="0" loadedclick="1">
+	<DbDetails fcsm="1">
+<DbTable>mylayout.shop_client_info</DbTable>
+<Index>c_id</Index>
+<Data>c_name,c_sex,c_birthdate,c_age,c_mobile,c_tel,c_elsephone,c_address,c_zipcode,c_remark,c_hydj,c_cityid,c_indate,seatsno,seatsname,active,c_id</Data>
+<Order>c_id</Order></DbDetails>
+<OnClick><assign name="c_cityid[narc]" expr="%{shop_client_infoLst[c_cityid]}" function="SetSel"/>
+<if cond="%{c_id}"><SetVisible name="insertshop_client_info" Visible="0"/><SetVisible name="modifyshop_client_info" Visible="1"/></if>
+</OnClick>
+</ListCtrl>
+</Ctrls></GroupBox>

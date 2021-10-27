@@ -1,0 +1,21 @@
+﻿<WndTap Name="shop_client_info" Text="shop_client_info">
+<xi:include href="shop_client_info_lan.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+<Ctrls>
+<GroupBox  Name="GBshop_client_info" id="shop_client_info" Text="shop_client_info" Size="100,100"><Ctrls>
+<Button Name="searchshop_client_info" Size="50,20" Text="refresh" ToolTip="显示当前月生日客户">
+			  <OnClick><submit next="shop_client_infoLst"/>	</OnClick>
+</Button>
+<TAB/><Button Name="viewshop_client_info" Size="50,20" Text="查看" ToolTip="在客户信息界面显示选中的客户">
+			  <OnClick><assign name="custom.c_id" expr="%{shop_client_infoLst[c_id]}"/><submit next="custom.OrderList"/>
+<DbDetails><where>c_id='%{custom.c_id}'</where></DbDetails><submit next="custom.ContactList" namelist="DbDetails"/></OnClick>
+</Button>
+<Button Name="FPshop_client_infoLst" Size="40,20" Text="firstpage" OnClick="(shop_client_infoLst)GetPage(First)"></Button>
+<Button Name="PREshop_client_infoLst" Size="40,20" Text="prepage" OnClick="(shop_client_infoLst)GetPage(Pre)"></Button>
+<Button Name="NPshop_client_infoLst" Size="40,20" Text="nextpage" OnClick="(shop_client_infoLst)GetPage(Next)"></Button>
+<BR/><ListCtrl Name="shop_client_infoLst" ToolTip="ttp_shop_client_info" Size="520,312" PageSize="10" loadedclick="0" Heading="c_name,100;c_sex,20;c_birthdate,90;c_address,20;c_remark,20;c_indate,150;c_mobile,250;c_tel,250;c_elsephone,250;" onload="init">
+	<DbDetails fcsm="1"><DbTable>mylayout.shop_client_info</DbTable><Index>c_id='%{shop_client_infoLst[c_id]}'</Index><Data>c_name,c_sex,c_birthdate,c_address,c_indate,c_remark,c_mobile,c_tel,c_elsephone,seatsno,seatsname,c_id,active,id_corp</Data></DbDetails><DbDetails fcsm="1"><queryFormat>select %{data} from %{dbtable} where MONTH(c_birthdate)=MONTH(CURDATE()) limit %{StartRow},%{PgSize}</queryFormat></DbDetails></ListCtrl>
+</Ctrls></GroupBox>
+</Ctrls>
+	<OnChanged></OnChanged>
+	<OnActivate></OnActivate>
+	</WndTap>

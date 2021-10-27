@@ -1,0 +1,54 @@
+﻿<Language name="shop_client_info">
+<Lang name="shop_client_info" value="shop_client_info"/>
+<Lang name="TabEditshop_client_info" value="shop_client_info Edit"/>
+<Lang name="TabViewshop_client_info" value="shop_client_info View"/>
+<Lang name="c_name" value=""/>
+<Lang name="ttp_c_name" value=""/>
+<Lang name="c_sex" value=""/>
+<Lang name="ttp_c_sex" value=""/>
+<Lang name="c_birthdate" value=""/>
+<Lang name="ttp_c_birthdate" value=""/>
+<Lang name="c_age" value=""/>
+<Lang name="ttp_c_age" value=""/>
+<Lang name="c_mobile" value=""/>
+<Lang name="ttp_c_mobile" value=""/>
+<Lang name="c_tel" value=""/>
+<Lang name="ttp_c_tel" value=""/>
+<Lang name="c_elsephone" value=""/>
+<Lang name="ttp_c_elsephone" value=""/>
+<Lang name="c_address" value=""/>
+<Lang name="ttp_c_address" value=""/>
+<Lang name="c_zipcode" value=""/>
+<Lang name="ttp_c_zipcode" value=""/>
+<Lang name="c_remark" value=""/>
+<Lang name="ttp_c_remark" value=""/>
+<Lang name="c_hydj" value=""/>
+<Lang name="ttp_c_hydj" value=""/>
+<Lang name="c_cityid" value=""/>
+<Lang name="ttp_c_cityid" value=""/>
+<Lang name="c_indate" value=""/>
+<Lang name="ttp_c_indate" value=""/>
+<Lang name="seatsno" value=""/>
+<Lang name="ttp_seatsno" value=""/>
+<Lang name="seatsname" value=""/>
+<Lang name="ttp_seatsname" value=""/>
+<Lang name="active" value=""/>
+<Lang name="ttp_active" value=""/>
+<Lang name="c_id" value=""/>
+<Lang name="ttp_c_id" value=""/>
+<Lang name="ttp_operationshop_client_info" value=""/>
+<Lang name="ttp_createshop_client_info" value=""/>
+<Lang name="ttp_modifyshop_client_info" value=""/>
+<Lang name="ttp_resetshop_client_info" value=""/>
+<Lang name="ttp_deleteshop_client_info" value=""/>
+<Lang name="ttp_refreshshop_client_info" value=""/>
+<Lang name="operation" value=""/>
+<Lang name="create" value=""/>
+<Lang name="modify" value=""/>
+<Lang name="reset" value=""/>
+<Lang name="delete" value=""/>
+<Lang name="refresh" value=""/>
+<Lang name="firstpage" value=""/>
+<Lang name="prepage" value=""/>
+<Lang name="nextpage" value=""/>
+</Language>

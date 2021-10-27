@@ -1,0 +1,35 @@
+<WndTap Name="mediatimesec" Text="媒体分析时段设置"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="媒体分析时段设置" Size="100,100"><Ctrls>
+		<Label Name="lb_code" Size="60,20" Text="编号" align="right"></Label>
+		<TextBox Name="TB_code" Size="60,20" Number="1" Text=""></TextBox>        
+		<Label Name="lb_start" Size="60,20" Text="开始时间" align="right"></Label>
+		<TextBox Name="TB_start" Size="60,20" Text=""></TextBox>        
+		<Label Name="lb_end" Size="60,20" Text="结束时间" align="right"></Label>
+		<TextBox Name="TB_end" Size="60,20" Text=""></TextBox>        
+		<Button Name="search"  Size="60,20" Text="查找">
+			<OnClick><DbDetails><where>where ID>=0</where></DbDetails><submit next="kbList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="insert"  Size="60,20" Text="添加"
+			OnClick="sql:insert into TimeSegmentCITS (BeginTime,EndTime) values('%{TB_start}','%{TB_end}')"></Button>
+		<Button Name="modify"  Size="60,20" Text="修改" 
+			OnClick="sql:update TimeSegmentCITS set BeginTime='%{TB_start}', EndTime='%{TB_end}' where ID=%{TB_code}"></Button>
+		<Button Name="del"  Size="60,20" Text="删除" 
+	    OnClick="sql:delete from TimeSegmentCITS where ID=%{TB_code}"></Button>
+		<BR/><ListCtrl Name="kbList"  PageSize="10" loadedclick="0" Size="600,500"
+			OnClick="SetText(TB_code,%0);SetText(TB_start,%1);SetText(TB_end,%2)"
+			OnLoad="init">
+			<DbDetails>
+				<DbTable></DbTable>
+				<Index>ID</Index>
+				<Data>*</Data>
+				<Order>ID desc</Order>
+				<Where></Where>
+				<queryFormat>select * from TimeSegmentCITS order by id asc</queryFormat> 
+				<!--<queryFormat>select * from (select %{data},ROW_NUMBER() OVER(Order by a.%{order} ) AS RowNumber from %{dbtable}  as a) as b where %{where} RowNumber BETWEEN  %{StartRow} and %{StartRow}+%{PgSize} </queryFormat> 
+				<Where>idx=1</Where>
+				<queryFormat>SELECT TOP(@pageSize) *FROM testWHERE UserId <(SELECT MIN(UserId) FROM (SELECT TOP ((@pageIndex-1) * @pageSize) UserId FROM test ORDER BY UserId DESC)B )ORDER BY UserId DESC</queryFormat> 
+				<queryFormat>select %{data} from %{dbtable} where %{where} order by %{order} limit %{StartRow},%{PgSize}</queryFormat>  mysql limit-->
+				<!--<liststyle>tbox</liststyle>-->
+			</DbDetails>
+			</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

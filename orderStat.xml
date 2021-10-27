@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderStat" Text="订单统计"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="订单统计" Size="100,100"><Ctrls>
+		<DateTime Name="YearMon"  Format="yyyy-MM-dd HH:mm:ss" Size="120,20"></DateTime>
+		<Button Name="statistic"  Size="60,20" Text="统计">
+			<OnClick>	<DbDetails></DbDetails><submit next="ordersLst" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="export"  Size="60,20" Text="导出">
+			<OnClick>	<Save></Save><submit next="ordersLst" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/><ListCtrl Name="ordersLst" Size="600,500">
+			<DbDetails>
+				<DbTable>shop_order</DbTable>
+				<Index>h_id </Index>
+				<MDX>月,日(1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26|27|28|29|30|31),cnts</MDX>
+				<Data>month(qr_dt) as 月,day(qr_dt) 日,count(*) as cnts</Data>
+				<Order></Order>
+				<Where>year(qr_dt)='%{YearMon[year]}' and month(qr_dt)='%{YearMon[month]}'</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where} group by month(qr_dt),day(qr_dt)</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

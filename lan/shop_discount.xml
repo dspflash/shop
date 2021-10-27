@@ -1,0 +1,28 @@
+﻿<Language name="shop_discount">
+<Lang name="shop_discount" value="shop_discount"/>
+<Lang name="TabEditshop_discount" value="shop_discount Edit"/>
+<Lang name="TabViewshop_discount" value="shop_discount View"/>
+<Lang name="dc_desc" value=""/>
+<Lang name="ttp_dc_desc" value=""/>
+<Lang name="state" value=""/>
+<Lang name="ttp_state" value=""/>
+<Lang name="remark" value=""/>
+<Lang name="ttp_remark" value=""/>
+<Lang name="id" value=""/>
+<Lang name="ttp_id" value=""/>
+<Lang name="ttp_operationshop_discount" value=""/>
+<Lang name="ttp_createshop_discount" value=""/>
+<Lang name="ttp_modifyshop_discount" value=""/>
+<Lang name="ttp_resetshop_discount" value=""/>
+<Lang name="ttp_deleteshop_discount" value=""/>
+<Lang name="ttp_refreshshop_discount" value=""/>
+<Lang name="operation" value=""/>
+<Lang name="create" value=""/>
+<Lang name="modify" value=""/>
+<Lang name="reset" value=""/>
+<Lang name="delete" value=""/>
+<Lang name="refresh" value=""/>
+<Lang name="firstpage" value=""/>
+<Lang name="prepage" value=""/>
+<Lang name="nextpage" value=""/>
+</Language>

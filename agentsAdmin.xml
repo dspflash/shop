@@ -1,0 +1,125 @@
+        <WndTap Name="agentsAdmin" Text="座席管理">
+		      <Ctrls>
+		        <GroupBox Name="GroupBox1"  Text="座席管理"
+		            LocationX="20" LocationY="0" SizeWidth="600" SizeHeight="100"></GroupBox>        
+		        <Label Name="lb_code"   Text="编号"
+		            LocationX="30" LocationY="30" SizeWidth="50" SizeHeight="20"></Label>
+		       	<TextBox Name="TB_code"
+		            LocationX="90" LocationY="30" SizeWidth="100" SizeHeight="24" Number="1"
+		            Text=""><OnEnChange><if cond="%{TB_code}"><DbDetails></DbDetails><submit next="UserList" namelist="DbDetails" method="post"/>
+			<else/><submit next="UserList" method="post" function="resetcontent"/></if></OnEnChange></TextBox>        
+		        <Label Name="lb_number"  
+		            LocationX="230" LocationY="30" SizeWidth="50" SizeHeight="20"
+		            Text="座席号"></Label>
+		       	<TextBox Name="TB_number"
+		            LocationX="280" LocationY="30" SizeWidth="100" SizeHeight="24"
+		            Text=""></TextBox>        
+		        <Label Name="lb_name"  
+		            LocationX="430" LocationY="30" SizeWidth="50" SizeHeight="20"
+		            Text="座席名"></Label>
+		       	<TextBox Name="TB_name"
+		            LocationX="480" LocationY="30" SizeWidth="100" SizeHeight="24"
+		            Text=""></TextBox>        
+		        <Label Name="lb_agentTpye"  
+		            LocationX="30" LocationY="60" SizeWidth="50" SizeHeight="20"
+		            Text="座席类别"></Label>
+			<ComboBox Name="CB_agentTpye"   SelectedIndex="0"
+			 	LocationX="90" LocationY="60" SizeWidth="100" SizeHeight="100"
+				Items="坐席|班长|信息|主管|管理员"></ComboBox>
+		        <Label Name="lb_agentGroup"  
+		            LocationX="230" LocationY="60" SizeWidth="50" SizeHeight="20"
+		            Text="座席组"></Label>
+		       	<TextBox Name="TB_agentGroup"
+		            LocationX="280" LocationY="60" SizeWidth="100" SizeHeight="24"
+		            Text=""></TextBox>        
+		     <Button Name="SendFile"  
+			LocationX="430" LocationY="60" SizeWidth="100" SizeHeight="24"
+			Text="上传文件" OnClick="SendFile:,filter=*.rar|*.rar|,dir=e:\3ucs,localdir="></Button>
+		        <Button Name="search"  
+		            LocationX="30" LocationY="120" SizeWidth="100" SizeHeight="24" Text="查找" 
+		            ><OnClick><DbDetails></DbDetails><submit next="AgList" namelist="DbDetails" method="post"/></OnClick></Button>
+		        <Button Name="insert"  
+		            LocationX="130" LocationY="120" SizeWidth="100" SizeHeight="24" Text="添加" 
+		            OnClick="sql:insert into SeatsInfo (SeatsNo ,SeatsName,BuildDate,SeatsGroup,SeatsLevel) values('%{TB_number}','%{TB_name}',now(),'%{TB_agentGroup}',%{CB_agentTpye[SelectedIndex]})"></Button>
+		        <Button Name="modify"  
+		            LocationX="330" LocationY="120" SizeWidth="100" SizeHeight="24" Clickneedconfirm="true"
+		            Text="修改" OnClick="sql:Update SeatsInfo set SeatsNo='%{TB_number}',SeatsName='%{TB_name}',SeatsGroup='%{TB_agentGroup}',SeatsLevel=%{CB_agentTpye[SelectedIndex]} where ID=%{TB_code}"></Button>
+		        <Button Name="delete"  
+		            LocationX="430" LocationY="120" SizeWidth="100" SizeHeight="24" Clickneedconfirm="true"
+		            Text="删除" OnClick="sql:delete from SeatsInfo where ID=%{TB_code}"></Button>
+		        <ListCtrl Name="AgList"  PageSize="10" loadedclick="1"
+		            LocationX="20" LocationY="155" SizeWidth="600" SizeHeight="200"
+		            OnClick="SetText(TB_code,%0);SetText(TB_number,%1);SetText(TB_name,%2);;SetSel(CB_agentTpye,%{SeatsLevel});SetText(TB_agentGroup,%{SeatsGroup})"
+			OnLoad="init" Heading="序号,10;坐席号,80;坐席名,80;坐席类别,80;坐席组,80;">
+			<DbDetails>
+				<DbTable>SeatsInfo</DbTable>
+				<Index>c_id</Index>
+				<Data>ID,SeatsNo,SeatsName,SeatsLevel,SeatsGroup</Data>
+				<Order></Order>
+				<Where>1</Where>
+				<queryFormat>select %{data} from %{dbtable} order by SeatsNo</queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+		        <GroupBox Name="GroupBox1"  
+		            LocationX="20" LocationY="370" SizeWidth="600" SizeHeight="100"
+		            Text="用户管理"></GroupBox>        
+		        <Label Name="lb_code"  
+		            LocationX="30" LocationY="400" SizeWidth="50" SizeHeight="20"
+		            Text="编号"></Label>
+		       	<TextBox Name="TB_codeU"
+		            LocationX="90" LocationY="400" SizeWidth="150" SizeHeight="24" Number="1"
+		            Text=""></TextBox>        
+		        <Label Name="lb_name"  
+		            LocationX="280" LocationY="400" SizeWidth="50" SizeHeight="20"
+		            Text="登陆名"></Label>
+		       	<TextBox Name="TB_nameU"
+		            LocationX="330" LocationY="400" SizeWidth="150" SizeHeight="24"
+		            Text=""></TextBox>        
+		        <Label Name="lb_pwd"  Password="1"
+		            LocationX="30" LocationY="430" SizeWidth="50" SizeHeight="20"
+		            Text="密码"></Label>
+		       	<TextBox Name="TB_pwdU"
+		            LocationX="90" LocationY="430" SizeWidth="150" SizeHeight="24" Password="1"
+		            Text=""></TextBox>        
+		        <Label Name="lb_layout"  
+		            LocationX="280" LocationY="430" SizeWidth="50" SizeHeight="20"
+		            Text="窗体布局"></Label>
+		       	<ComboBox Name="TB_layout" Type="2"
+		            LocationX="330" LocationY="430" SizeWidth="150" SizeHeight="100" items="|layout\hsl\u0.xml|layout\hsl\u0record.xml|layout\hsl\banzhang.xml|layout\hsl\leader.xml|layout\hsl\user0.xml"
+		            Text="200000"></ComboBox>        
+		        <Button Name="insertU"  
+		            LocationX="30" LocationY="480" SizeWidth="100" SizeHeight="24" Text="添加" 
+		            >
+				<OnClick><DbDetails><queryFormat>insert into userlogin (user_name,user_pwd,Layout,status,agentID,actived) values('%{TB_nameU}','%{TB_pwdU}','%{TB_layout}','u',%{TB_code},1)</queryFormat></DbDetails><submit next="insertU" namelist="DbDetails" method="post"/>
+				<DbDetails></DbDetails><submit next="UserList" namelist="DbDetails" method="post"/></OnClick></Button>
+		        <Button Name="modify"  Clickneedconfirm="true"
+		            LocationX="130" LocationY="480" SizeWidth="100" SizeHeight="24"
+		            Text="修改" OnClick="sql:Update userlogin set user_name='%{TB_nameU}',Layout='%{TB_layout}' where user_code=%{TB_codeU}"></Button>
+		        <Button Name="modifyPass"  Clickneedconfirm="true"
+		            LocationX="230" LocationY="480" SizeWidth="100" SizeHeight="24"
+		            Text="修改密码" OnClick="sql:Update userlogin set user_pwd='%{TB_pwdU}' where user_code=%{TB_codeU}"></Button>
+		        <Button Name="modify"  Clickneedconfirm="true"
+		            LocationX="450" LocationY="480" SizeWidth="50" SizeHeight="24"
+		            Text="禁用" OnClick="sql:Update userlogin set actived=0 where user_code=%{TB_codeU}"></Button>
+		        <Button Name="modifyPass"  Clickneedconfirm="true"
+		            LocationX="500" LocationY="480" SizeWidth="50" SizeHeight="24"
+		            Text="启用" OnClick="sql:Update userlogin set actived=1 where user_code=%{TB_codeU}"></Button>
+		        <Button Name="delete"  Clickneedconfirm="true"
+		            LocationX="550" LocationY="480" SizeWidth="50" SizeHeight="24"
+		            Text="删除" OnClick="sql:delete from userlogin where user_code=%{TB_codeU}"></Button>
+		        <ListCtrl Name="UserList"  PageSize="10" loadedclick="1"
+		            LocationX="20" LocationY="520" SizeWidth="600" SizeHeight="60"
+		            OnClick="SetText(TB_codeU,%0);SetText(TB_nameU,%1);SetText(TB_pwdU,);SetSel(TB_layout,%2);"
+			OnLoad="init" Heading="序号,10;登陆帐号,80;用户布局,80;更新时间,100;登陆状态,50;启用状态,50;"
+		            >
+			<DbDetails>
+				<DbTable>userlogin u, userstatusmsg s</DbTable>
+				<Index>c_id</Index>
+				<Data>u.user_code,u.user_name,u.Layout,u.updatetime,s.text,u.actived</Data>
+				<Order></Order>
+				<Where>u.status=s.status and u.agentID='%{agentsAdmin.TB_code}'</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where}</queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+		      </Ctrls>
+      </WndTap>

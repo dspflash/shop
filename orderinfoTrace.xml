@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderInfoTrace" Text="信息跟单">
+	<var name="SeatsLevel" expr="3"/>
+	<Ctrls><GroupBox Name="GroupBox1" Text="信息跟单"><Ctrls>
+		<DateTime Name="YearMon"  Format="yyyy-MM-dd" Size="80,20"></DateTime>
+		<ComboBox Name="CB_orderState" Size="60,20"
+			OnLoad="sql:select state_desc,id from shop_order_state" SelectedIndex="0"></ComboBox>
+		<ComboBox Name="UserCbLst"  OnLoad="init" Size="60,20" SelectedIndex="-1">
+			<DbDetails>
+				<!--Where>where seatsgroup=%{SeatsGroup}</Where-->
+				<queryFormat>select user_name,user_code from userlogin where id_corp='%{id_corp}' order by user_code</queryFormat> 
+			</DbDetails>
+			</ComboBox>
+		<ComboBox Name="CB_shfs0" 
+			OnLoad="sql:select s_desc ,s_id  from shop_shfs where s_state=1" Size="80,20" SelectedIndex="0"></ComboBox>
+		<TextBox Name="TB_Phone" ToolTip="联系电话" Size="80,20" Text=""/> 
+		<TextBox Name="TB_orderId" ToolTip="订单号" Size="80,20" Text=""/> 
+		<ComboBox Name="CB_orderStateNew"  Size="60,20" ToolTip="设置的新的订单状态"
+			OnLoad="sql:select state_desc,id  from shop_order_state where (id&gt;3 and id&lt;8) or id&gt;9"
+			SelectedIndex="0"></ComboBox>
+		<TextBox Name="TB_TraceTxt" ToolTip="信息备注" Size="60,20" Text=""/> 
+		<BR/><Button Name="modify"  Clickneedconfirm="true" ToolTip="先选择订单，然后选择新的状态，若需备注在信息备注里输入相关信息，点击该按钮即可！"
+		  Size="60,20" Text="信息更新">
+			<OnClick>
+			<DbDetails><queryFormat>update shop_order set o_state=%{CB_orderStateNew[id]},o_td_reason='%{TB_TraceTxt}' where o_id='%{OrderList[0]}'</queryFormat></DbDetails><submit next="modify" namelist="DbDetails" method="post"/>
+			<DbDetails/><submit next="OrderList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		<Button Name="search" Size="30,20" Text="显示" ToolTip="当日所选状态订单">
+			<OnClick>
+				<assign name="sqltime" expr="o.o_state=%{CB_orderState[id]} and year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+				<if cond="SeatsLevel&gt;2"><assign name="sqlwhere" expr="%{sqltime}"/>
+				<else/><assign name="sqlwhere" expr="%{sqltime} and SeatsInfo.seatsgroup=%{SeatsGroup}"/></if>
+				<DbDetails><Where>where  %{sqlwhere}</Where></DbDetails>
+				<submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchall" Size="60,20" Text="显示全部" ToolTip="当日所有状态订单">
+			<OnClick>	
+				<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+				<if cond="SeatsLevel&gt;2"><assign name="sqlwhere" expr="%{sqltime}"/>
+				<else/><assign name="sqlwhere" expr="%{sqltime} and SeatsInfo.seatsgroup=%{SeatsGroup}"/></if>
+				<DbDetails><Where>where  %{sqlwhere}</Where></DbDetails>
+				<submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchU" Size="60,20" Text="按经手人查" ToolTip="当日该坐席所有订单">
+			<OnClick>
+				<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+				<DbDetails><Where>where o.o_jobno=%{UserCbLst} and %{sqltime}</Where></DbDetails>
+				<submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchShfs"  Size="60,20" Text="按送货方式" ToolTip="当日该送货方式所有订单">
+			<OnClick>
+				<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+				<DbDetails><Where>where o.o_shfs=%{CB_shfs0[s_id]} and %{sqltime}</Where>
+				</DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchPhone" Size="60,20" Text="按联系电话" ToolTip="该联系电话所有订单">
+			<OnClick>
+				<assign name="sqltime" expr=""/>
+				<DbDetails><Where>where o.o_tel='%{TB_Phone}' or o.o_mobile='%{TB_Phone}'</Where></DbDetails>
+				<submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchOrderId"   Size="60,20" Text="按订单号" ToolTip="该订单号订单">
+			<OnClick>
+				<assign name="sqltime" expr=""/>
+				<DbDetails><Where>where o.o_id='%{TB_orderId}'</Where></DbDetails>
+				<submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<BR/><ListCtrl Name="OrderList" PageSize="10" Size="600,400">
+			<DbDetails>
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs ON o.o_shfs = shop_shfs.s_id LEFT OUTER JOIN shop_order_state ON o.o_state = shop_order_state.id left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id as 订单号,shop_order_state.state_desc 订单状态,o.o_td_reason 状态备注,o.o_name as 联系人,(case when o.o_sex=1 then '女' else '男' end) as 性别,o.o_age as 年龄,o.o_tel as 固定电话,o.o_mobile as 移动电话,o.o_zj as 金额,'' as 抬头,o.o_add as 联系地址,SeatsInfo.SeatsName as 经手人,o.SeatsNo as 坐席号,shop_shfs.s_desc as 送货方式,o.o_hdid as 货单号</Data>
+				<Order>shop_order.o_id desc</Order>
+				<queryFormat>select %{data} from %{dbtable}  %{where} order by 订单号 desc</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox></Ctrls>
+	<OnActivate><if cond="SeatsLevel&gt;2">
+		<DbDetails><Where></Where></DbDetails><submit next="UserCbLst" namelist="DbDetails" method="post"/>
+		<SetVisible name="GroupLst" Visible="1"/><SetVisible name="searchGrp" Visible="1"/>
+		</if>
+		<if cond="SeatsLevel&gt;1">
+		<SetVisible name="checked" Visible="1"/><SetVisible name="cancelConfirm" Visible="1"/><SetVisible name="export" Visible="1"/>
+		</if>
+		</OnActivate>
+ </WndTap>
+
+
+

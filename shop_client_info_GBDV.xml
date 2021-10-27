@@ -1,0 +1,17 @@
+﻿<GroupBox cols="xs12 sm12 md12 lg12" Name="GBDVshop_client_info"><Ctrls>
+<ListCtrl loadedclick="0" ToolTip="ttp_shop_client_info" Name="shop_client_infoLst" Size="700,420">
+	<DbDetails fcsm="1">
+<DbTable>mylayout.shop_client_info s left join mylayout.narc n on s.c_cityid=n.narc</DbTable>
+<Index>c_id</Index>
+<Data>s.c_name,s.c_sex,s.c_birthdate,s.c_age,s.c_mobile,s.c_tel,s.c_elsephone,s.c_address,s.c_zipcode,s.c_remark,s.c_hydj,n.name c_cityid,s.c_indate,s.seatsno,s.seatsname,s.active,s.c_id</Data>
+<Order>c_id</Order></DbDetails>
+<operator firstpage="1" nextpage="1" refresh="1" prepage="1">
+<op text="modify"><DbDetails><Where>c_id='%{shop_client_info_vLst[c_id]}'</Where></DbDetails><submit next="$this.shop_client_info.shop_client_infoLst" namelist="DbDetails"/></op>
+<op text="delete" needconfirm="1"><DbDetails>
+<DbTable>mylayout.shop_client_info</DbTable>
+<Where>c_id='%{shop_client_info_vLst[c_id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><submit/></op>
+</operator>
+</ListCtrl>
+</Ctrls></GroupBox>

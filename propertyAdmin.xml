@@ -1,0 +1,36 @@
+<WndTap Name="propertyAdmin" Text="商品属性管理">
+	<Ctrls><GroupBox Name="GB" Size="80,20"  Text="商品属性(大小、颜色等)"><Ctrls>        
+		<Label Name="lb_name" Size="80,20" Text="属性名称" align="right"></Label>
+		<TextBox Name="prop_display_name" Size="80,20" Text=""></TextBox>        
+		<Label Name="lb_xh" Size="80,20" Text="参数列表" align="right"></Label>
+		<TextBox Name="prop_list" Size="80,20" Text="" ToolTip="Separate choices with '|', no spacee.g. S|M|L|XL|XXL"></TextBox>        
+		<Label Name="lb_price" Size="80,20" Text="对应价格微调" align="right"></Label>
+		<TextBox Name="prop_prices" Size="80,20" ToolTip="Price delta(its order according to 参数列表): e.g. +1 adds one to the product price,-1 subtracts one off the product price. "></TextBox>        
+		<BR/><ListCtrl Name="ppList"  PageSize="10" Size="400,400" loadedclick="false" OnLoad="init"
+          Heading="属性名称,80;参数列表,80;价格微调,80;">
+			<DbDetails fcsm="1">
+				<DbTable>shop_properties</DbTable>
+				<Data>prop_display_name,prop_list,prop_prices,property_id</Data>
+				</DbDetails>
+			</ListCtrl>
+		<TAB/><GroupBox Name="GBOP" Size="80,20" Text="操作"><Ctrls>
+		<BR/><Button Name="insert"   Size="80,20" Text="添加">			<OnClick>
+				<DbDetails fcsm="1"><Data>prop_display_name,prop_list,prop_prices,id_corp</Data>
+				<queryFormat>insert into shop_properties %{data}</queryFormat></DbDetails>
+				<submit namelist="DbDetails" method="post"/>
+				<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		<BR/><Button Name="disabledPrice"   Size="80,20" Text="修改">
+			<OnClick>
+				<DbDetails fcsm="1"><Data>prop_display_name,prop_list,prop_prices</Data>
+				<queryFormat>update shop_properties set %{data} where property_id =%{ppList[property_id]}</queryFormat></DbDetails>
+				<submit namelist="DbDetails" method="post"/>
+				<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+		<BR/><Button Name="refreshPrice"   Size="80,20" Text="刷新" >
+			<OnClick>
+				<submit next="ppList" method="post"/>
+			</OnClick></Button>
+			</Ctrls></GroupBox>
+	</Ctrls></GroupBox></Ctrls>
+	</WndTap>

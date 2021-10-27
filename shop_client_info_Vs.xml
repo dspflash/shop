@@ -1,0 +1,79 @@
+﻿<GroupBox Name="GBDEDITshop_client_info"><Ctrls>
+<GroupBox Name="GB_c_name" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_name" Size="60,20" Text="c_name" Align="Right"/>
+<TextBox Name="c_name" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_name"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_sex" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_sex" Size="60,20" Text="c_sex" Align="Right"/>
+<ComboBox Name="c_sex" Size="170,100" Text="" Weight="170" Items="男|女" ToolTip="ttp_c_sex"></ComboBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_birthdate" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_birthdate" Size="60,20" Text="c_birthdate" Align="Right"/>
+<DateTime Name="c_birthdate" Format="yyyy-MM-dd" Size="170,20" Text="" Weight="170"  ToolTip="ttp_c_birthdate"></DateTime>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_c_age" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_age" Size="60,20" Text="c_age" Align="Right"/>
+<TextBox Name="c_age" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_age"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_mobile" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_mobile" Size="60,20" Text="c_mobile" Align="Right"/>
+<TextBox Name="c_mobile" Size="150,20" Text="" Weight="150" ToolTip="ttp_c_mobile"></TextBox>
+<MagicCtrl Name="dialc_mobile" button="type:0" images=" ,data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{c_mobile}" ToolTip="DialToCall"/>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_tel" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_tel" Size="60,20" Text="c_tel" Align="Right"/>
+<TextBox Name="c_tel" Size="150,20" Text="" Weight="150" ToolTip="ttp_c_tel"></TextBox>
+<MagicCtrl Name="dialc_tel" button="type:0" images=" ,data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{c_tel}" ToolTip="DialToCall"/>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_c_elsephone" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_elsephone" Size="60,20" Text="c_elsephone" Align="Right"/>
+<TextBox Name="c_elsephone" Size="150,20" Text="" Weight="150" ToolTip="ttp_c_elsephone"></TextBox>
+<MagicCtrl Name="dialc_elsephone" button="type:0" images=" ,data/startcall_green.png" Size="20,20" OnClick="nis3ucs:%{c_elsephone}" ToolTip="DialToCall"/>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_address" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_address" Size="60,20" Text="c_address" Align="Right"/>
+<TextBox Name="c_address" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_address"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_zipcode" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_zipcode" Size="60,20" Text="c_zipcode" Align="Right"/>
+<TextBox Name="c_zipcode" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_zipcode"></TextBox>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_c_remark" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_remark" Size="60,20" Text="c_remark" Align="Right"/>
+<TextBox Name="c_remark" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_remark"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_hydj" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_hydj" Size="60,20" Text="c_hydj" Align="Right"/>
+<TextBox Name="c_hydj" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_hydj"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_cityid" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_c_cityid" Size="60,20" Text="c_cityid" Align="Right"/>
+<TextBox Name="c_cityid" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_cityid">
+	<DbDetails>
+<DbTable>mylayout.narc</DbTable>
+<Index>narc</Index>
+<Data>name,narc</Data>
+<Where></Where>
+<queryFormat></queryFormat></DbDetails></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_indate" Multiline="0" cols="xs12 sm6 md4 lg3" Visible="false" overlap="pre"><Ctrls>
+<Label Name="lb_c_indate" Size="60,20" Text="c_indate" Align="Right" Visible="false" overlap="pre" readonly="true"/>
+<DateTime Name="c_indate" Format="yyyy-MM-dd HH:mm:ss" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_indate" Visible="false" overlap="pre" readonly="true"></DateTime>
+</Ctrls></GroupBox>
+<BR AutoHeight="1"/><GroupBox Name="GB_seatsno" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_seatsno" Size="60,20" Text="seatsno" Align="Right"/>
+<TextBox Name="seatsno" Size="170,20" Text="" Weight="170" ToolTip="ttp_seatsno"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_seatsname" Multiline="0" cols="xs12 sm6 md4 lg3"><Ctrls>
+<Label Name="lb_seatsname" Size="60,20" Text="seatsname" Align="Right"/>
+<TextBox Name="seatsname" Size="170,20" Text="" Weight="170" ToolTip="ttp_seatsname"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_active" Multiline="0" cols="xs12 sm6 md4 lg3" Visible="false" overlap="pre"><Ctrls>
+<Label Name="lb_active" Size="60,20" Text="active" Align="Right" Visible="false" overlap="pre" readonly="true"/>
+<TextBox Name="active" Size="170,20" Text="" Weight="170" ToolTip="ttp_active" Visible="false" overlap="pre" readonly="true"></TextBox>
+</Ctrls></GroupBox>
+<GroupBox Name="GB_c_id" Multiline="0" cols="xs12 sm6 md4 lg3" Visible="false" overlap="pre"><Ctrls>
+<Label Name="lb_c_id" Size="60,20" Text="c_id" Align="Right" Visible="false" overlap="pre" readonly="true"/>
+<TextBox Name="c_id" Size="170,20" Text="" Weight="170" ToolTip="ttp_c_id" Visible="false" overlap="pre" readonly="true"><OnEnChange><if cond="'%{c_id}'"><SetVisible name="insertshop_client_info" Visible="0"/><SetVisible name="modifyshop_client_info" Visible="1"/><else/><SetVisible name="insertshop_client_info" Visible="1"/><SetVisible name="modifyshop_client_info" Visible="0"/></if></OnEnChange></TextBox>
+</Ctrls></GroupBox>
+</Ctrls></GroupBox>

@@ -1,0 +1,67 @@
+        <WndTap Name="myinfomation" Text="我的资料">
+		    <Ctrls>
+			<GroupBox Name="GroupBox0"  
+		            LocationX="20" LocationY="0" SizeWidth="600" SizeHeight="70"
+		            Text="坐席信息"></GroupBox>        
+		        <Label Name="lb_agentTpye"  
+		            LocationX="30" LocationY="30" SizeWidth="50" SizeHeight="20"
+		            Text="座席类别"></Label>
+			<ComboBox Name="CB_agentTpye" Visible="true" Enabled="false"  SelectedIndex="0"
+			 	LocationX="90" LocationY="30" SizeWidth="100" SizeHeight="100"
+				Items="坐席|班长|信息|主管|管理员"></ComboBox>
+		        <Label Name="lb_agentGroup"  
+		            LocationX="230" LocationY="30" SizeWidth="50" SizeHeight="20"
+		            Text="座席组"></Label>
+		       	<TextBox Name="TB_agentGroup" Visible="true" Enabled="false" ReadOnly="false"
+		            LocationX="280" LocationY="30" SizeWidth="100" SizeHeight="24"
+		            Text=""></TextBox>        
+			<GroupBox Name="GroupBox1"  
+		            LocationX="20" LocationY="80" SizeWidth="600" SizeHeight="70"
+		            Text="登陆信息"></GroupBox>        
+		        <Label Name="lb_code"  
+		            LocationX="30" LocationY="100" SizeWidth="50" SizeHeight="20"
+		            Text="编号"></Label>
+		       	<TextBox Name="TB_code" Visible="true" Enabled="false" ReadOnly="false"
+		            LocationX="90" LocationY="100" SizeWidth="50" SizeHeight="24" Number="1"
+		            Text=""></TextBox>        
+		        <Label Name="lb_name"  
+		            LocationX="180" LocationY="100" SizeWidth="50" SizeHeight="20"
+		            Text="登陆名"></Label>
+		       	<TextBox Name="TB_name" Visible="true" Enabled="false" ReadOnly="false"
+		            LocationX="230" LocationY="100" SizeWidth="100" SizeHeight="24"
+		            Text=""></TextBox>        
+		        <Label Name="lb_pwd"  Password="1"
+		            LocationX="330" LocationY="100" SizeWidth="50" SizeHeight="20"
+		            Text="密码"></Label>
+		       <TextBox Name="TB_pwd"
+		            LocationX="390" LocationY="100" SizeWidth="100" SizeHeight="24" Password="1"
+		            Text=""></TextBox>        
+		        <Button Name="modifyPass"  Clickneedconfirm="true"
+		            LocationX="530" LocationY="100" SizeWidth="80" SizeHeight="24"
+		            Text="修改密码" OnClick="sql:Update userlogin set user_pwd='%{TB_pwd}' where user_code=%{TB_code}"></Button>
+			<Button Name="getnisu"  
+		            LocationX="530" LocationY="30" SizeWidth="80" SizeHeight="24"
+		            Text="下载程序" OnClick="GetFile:3UCshop_NISU_setup.exe,dir=E:\3ucs\,localdir="></Button>
+			<Button Name="train0"  
+		            LocationX="430" LocationY="30" SizeWidth="40" SizeHeight="24"
+		            Text="培训" OnClick="exec:http://i3u/ag.html"></Button>
+			<Button Name="train1"  
+		            LocationX="480" LocationY="30" SizeWidth="40" SizeHeight="24"
+		            Text="培训1" OnClick="exec:http://i3u/callin.html"></Button>
+		        <ListCtrl Name="UserList"  PageSize="10" loadedclick="0"
+		            LocationX="20" LocationY="155" SizeWidth="600" SizeHeight="200"
+		            OnClick="SetText(TB_code,%0);SetText(TB_name,%1);SetText(TB_layout,%2)"
+				OnLoad="init" Heading="编码,20;分机号,60;座席号,60;座席名,60;更新时间,120;状态,60;"
+		            >
+			<DbDetails>
+				<DbTable>userlogin u, userstatusmsg s, SeatsInfo as a</DbTable>
+				<Index>c_id</Index>
+				<Data>u.user_code,u.user_name,a.SeatsNo,a.SeatsName,u.updatetime,s.text</Data>
+				<Order></Order>
+				<Where>u.status=s.status and u.agentID='%{agentid}' and a.ID=u.agentID</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where}</queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+		      </Ctrls>
+		<OnActivate><assign name="CB_agentTpye" expr="%{SeatsLevel}" function="SetSel"/><assign name="TB_agentGroup" expr="%{SeatsGroup}"/></OnActivate>
+        </WndTap>

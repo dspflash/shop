@@ -1,0 +1,37 @@
+﻿<GroupBox cols="xs12 sm12 md12 lg12" Name="GBOPEshop_client_info" Size="100,100"><Ctrls>
+<Button sqlpkinsert="c_id" Text="create" ToolTip="ttp_createshop_client_info" Name="insertshop_client_info" Size="50,20">
+	<OnClick>
+	<DbDetails mode="insert" fcsm="1">
+<DbTable>mylayout.shop_client_info</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>c_name,c_sex,c_birthdate,c_age,c_mobile,c_tel,c_elsephone,c_address,c_zipcode,c_remark,c_hydj,c_cityid[narc],seatsno,seatsname</Data>
+<DataEx>c_indate;now()</DataEx>
+<queryFormat>insert into %{table} %{data}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><if cond="%{refreshAfterEdit}"><submit next="shop_client_infoLst"/></if>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="modify" ToolTip="ttp_modifyshop_client_info" Name="modifyshop_client_info" Size="50,20">
+	<OnClick>
+	<DbDetails mode="update" fcsm="1">
+<DbTable>mylayout.shop_client_info</DbTable>
+<Required>%{dataRequired}</Required>
+<Requireless>%{dataRequireless}</Requireless>
+<Data>c_name,c_sex,c_birthdate,c_age,c_mobile,c_tel,c_elsephone,c_address,c_zipcode,c_remark,c_hydj,c_cityid[narc],seatsno,seatsname</Data>
+<DataEx/>
+<Where>c_id='%{c_id}'</Where>
+<queryFormat>update %{table} set %{data} where %{where}</queryFormat></DbDetails>
+	<submit namelist="DbDetails"/><if cond="%{refreshAfterEdit}"><submit next="shop_client_infoLst"/></if>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="reset" ToolTip="ttp_resetshop_client_info" Name="resetshop_client_info" Size="50,20">
+	<OnClick>
+	<submit next="GBDEDITshop_client_info" function="reset"/>
+	</OnClick>
+	</Button><TAB/>
+<Button Text="gsearch" ToolTip="ttp_gsearchshop_client_info" Name="gsearchshop_client_info" Size="50,20" visible="false">
+	<OnClick>
+	<search next="shop_client_infoLst" listed="0" prefixwhere="0" inputed="1"><zone_id op="(" ref=""/></search><submit next="GBDEDITshop_client_info" namelist="search" function="search"/>
+	</OnClick>
+	</Button><TAB/>
+</Ctrls></GroupBox>

@@ -1,0 +1,14 @@
+﻿<WndTap Name="shop_client_info_v" Text="shop_client_info">
+<WndTaps>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shop_client_info_Ve.xml" popup="1"/>
+</WndTaps>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="lan\shop_client_info.xml"/>
+<Ctrls><GroupBox  Name="GBshop_client_info" id="shop_client_info" Text="shop_client_info" Size="100,100"><Ctrls>
+<xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shop_client_info_Vs.xml"/>
+<BR AutoHeight="1"/><GroupBox  Name="GBOPVshop_client_info" Size="100,20" cols="xs12 sm12 md12 lg12"><Ctrls>
+<Button Text="addone" ToolTip="ttp_addone" Name="addone" Size="50,20">	<OnClick><submit next="$this.shop_client_info.GBDEDITshop_client_info" function="reset"/></OnClick>	</Button><TAB/>	
+<Button Text="reset" ToolTip="ttp_resetshop_client_info" Name="resetshop_client_info" Size="50,20">	<OnClick>	<submit next="GBDEDITshop_client_info" function="reset"/>	</OnClick>	</Button><TAB/>	
+<Button Text="gsearch" ToolTip="ttp_gsearchshop_client_info" Name="gsearchshop_client_info" Size="50,20" visible="true">	<OnClick>	<search next="shop_client_info_vLst" listed="0" prefixwhere="0" inputed="1"></search><submit next="GBDEDITshop_client_info" namelist="search" function="search"/>	</OnClick>	</Button><TAB/></Ctrls></GroupBox>
+<BR AutoHeight="1"/><xi:include xmlns:xi="http://www.w3.org/2001/XInclude" href="shop_client_info_Vv.xml"/>
+</Ctrls></GroupBox>
+</Ctrls></WndTap>

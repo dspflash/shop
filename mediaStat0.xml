@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="mediaStat0" Text="媒体统计(日)"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="媒体统计(日)" Size="100,100"><Ctrls>
+		<DateTime Name="YearMon"  Format="yyyy-MM-dd HH:mm:ss" Size="120,20"></DateTime>
+		<Button Name="search" Size="60,20" Text="统计">
+			<OnClick>	<DbDetails></DbDetails><submit next="CallList" namelist="DbDetails" method="post"/><submit next="tb_totalrecs" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Label Name="lb_totalrecs"  Text="过滤重复总数" Size="80,20"/>
+		<TextBox Name="tb_totalrecs" Size="60,20"	Text="">
+			<DbDetails>
+				<DbTable></DbTable>
+				<Index></Index>
+				<Data>count(*) as cnts</Data>
+				<Order>shop_order.o_id desc</Order>
+				<queryFormat>select %{data} from (select distinct callerid from gwcalls where year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}' and day(starttime)='%{YearMon[day]}' and calleeid!='' and duration!=0) as a</queryFormat> 
+			</DbDetails>
+		</TextBox>        
+		<Button Name="export"  Size="60,20" Text="导出">
+			<OnClick>	<Save></Save><submit next="CallList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+		<BR/><ListCtrl Name="CallList"  swaprowcol="1" Heading="时间段,150;数量,100;"
+		Size="600,500">
+			<DbDetails>
+			  <DbTable>gwcalls</DbTable> 
+			<Data>
+			  <Data>sql:select * from TimeSegmentCITS order by id asc</Data> 
+			  <DataFormat>sum(case when a.indate between '%{BeginTime}' and '%{EndTime}' then 1 else 0 end) as '%{BeginTime}-%{EndTime}'</DataFormat> 
+			  </Data>
+		  <Where>where year(starttime)='%{YearMon[year]}' and month(starttime)='%{YearMon[month]}' and day(starttime)='%{YearMon[day]}' and calleeid!=''</Where> 
+		  <queryFormat>select %{data} from (SELECT cdrid,substring(starttime,1,10) as days,substring(starttime,12,5) AS indate from %{dbtable} %{where}) as a</queryFormat> 
+		  </DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

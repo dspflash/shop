@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderinfoAdmin0" Text="订单管理"><Ctrls>
+	<xi:include href="odrb.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<BR AutoHeight="1"/><TAB/><ListCtrl Name="OrderList" PageSize="10" Size="560,100" ToolTip="订单列表" Visible="1"
+		Heading="订单号,50;联系人,50;订单时间,100;移动电话,80;固定电话,80;具体地址,160;总价,80;送货方式,80;货单号,100;购买目的,80;经办人,50;审核状态,60;付款方式,20;备注,100;"
+		OnClick="SetSel(CB_shfs,%{s_desc});SetSel(CB_tdreason,%{g_desc});SetSel(CB_orderState,%{state_desc});SetSel(CB_fp,%{o_fp});SetSel(UserLst,%{o_jobno}));SetSel(CB_Discount,%{dc})">
+			<DbDetails fcsm="1">
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs as s ON o.o_shfs = s.s_id LEFT OUTER JOIN shop_order_state as t ON o.o_state = t.id LEFT OUTER JOIN shop_gmmd as g ON o.o_gmmd = g.id</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id,o.o_name,o.o_dt,o.o_mobile,o.o_tel,o.o_add,o.o_zj,s.s_desc,o.o_hdid,g.g_desc,o.o_jobno,t.state_desc,o.o_fp,o.o_remark,o.o_cjj,100-o.o_nudiscount as dc</Data>
+				<Order>o.o_id desc</Order>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit %{StartRow},%{PgSize} </queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+	<Label name="locodrop" Size="120,20" overlap="ginfo"/><GroupBox Name="orderop"  Text="订单处理" Size="60,20"><Ctrls>
+	<Button Name="update" Visible="true" Enabled="true" Clickneedconfirm="true" Size="60,20" Text="修改">
+			<OnClick>	<if cond="%{CB_orderState[id]}!=0"><alert next="xx" expr="只能修改未确认订单"/>
+			<else/>
+				<DbDetails fcsm="1">
+					<DbTable>shop_order</DbTable>
+					<Data>h_id,o_name,o_mobile ,o_tel, o_add ,o_remark</Data>
+					<DataEx>o_shfs=%{CB_shfs[shop_id]},o_gmmd=%{CB_tdreason[id]},o_fp=%{CB_fp[SelectedIndex]},o_jobno='%{UserLst[SeatsNo]}',o_nudiscount=100-%{CB_Discount},o_zj=floor(o_cjj*(100-o_nudiscount)/100)</DataEx>
+					<queryFormat>Insert into %{dbtable} %{data}</queryFormat>
+				<queryFormat>Update %{dbtable} set %{data} where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="update" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where o_id=%{o_id}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+				</if></OnClick></Button>
+	<BR/><Button Name="confirm"  Clickneedconfirm="true" Size="60,20" Text="确认订单">
+			<OnClick>
+			<DbDetails><queryFormat>Update shop_order set o_state=1,qr_dt=now() where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="confirm" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+	<Button Name="cancel"  Clickneedconfirm="true" Size="60,20" Text="取消订单">
+			<OnClick>
+			<DbDetails><queryFormat>Update shop_order set o_state=2,o_cancel_date=now() where o_id=%{o_id} and o_state=0</queryFormat></DbDetails><submit next="cancel" namelist="DbDetails" method="post"/>
+			<DbDetails></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+	<BR/><DateTime Name="YearMon"  Format="yyyy-MM-dd" Size="60,20"></DateTime>
+	<ComboBox Name="CB_orderStatea" OnLoad="sql:select state_desc,id  from shop_order_state" Size="60,20" SelectedIndex="0"></ComboBox>
+	<BR/><Button Name="search" Size="60,20" Text="查询" Tooltip="按订单日期(指定日)">
+			<OnClick><DbDetails><Where>where year(o.o_dt)='%{YearMon[year]}' and month(o.o_dt)='%{YearMon[month]}' and day(o.o_dt)='%{YearMon[day]}'</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+	<Button Name="search1" Size="60,20" Text="查询" ToolTip="按订单状态">
+			<OnClick><DbDetails><Where>where year(o.o_dt)>2011 and o.o_state=%{CB_orderStatea[id]}</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+	<BR/><Button Name="search2" Size="60,20" Text="查询订单" ToolTip="不区分订单状态" >
+			<OnClick>	<DbDetails><Where>where year(o.o_dt)>2011</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+	<BR/><Button Name="PrePage" Size="60,20" Text="上一页" OnClick="(OrderList)GetPage(Pre)"></Button>
+	<Button Name="NextPage" Size="60,20" Text="下一页" OnClick="(OrderList)GetPage(Next)"></Button>
+	<BR/><Label Name="lb_totalrecs"  Text="总记录数" Size="60,20"/>
+	<TextBox Name="tb_totalrecs" Visible="true" Enabled="false" ReadOnly="false" Size="60,20">
+			<DbDetails>
+				<DbTable>shop_order o</DbTable>
+				<Index>h_id </Index>
+				<Data>count(*) as counts</Data>
+				<Order></Order>
+				<Where></Where>
+				<queryFormat>select %{data} from  %{dbtable} %{where}</queryFormat> 
+			</DbDetails>
+			</TextBox> 
+	<BR/><Label Name="lb_totalmoney"  Text="总金额" Size="60,20"/>
+	<TextBox Name="tb_totalmoney" Visible="true" Enabled="false" ReadOnly="false" Size="60,20">
+			<DbDetails>
+				<DbTable>shop_order o</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(o_zj) as zj</Data>
+				<Order>shop_order.o_id desc</Order>
+				<queryFormat>select %{data} from %{dbtable}  %{where}</queryFormat> 
+			</DbDetails>
+			</TextBox>        
+	<BR/><Label Name="lb_totalyantie"  Text="眼贴总数" Size="60,20"/>
+	<TextBox Name="tb_totalyantie" Visible="true" Enabled="false" ReadOnly="false" Size="60,20">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id inner join shop_product as p on p.p_id=d.p_id</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(case when p.p_name=14 then d.p_num else 0 end) as t</Data>
+				<Order></Order>
+				<queryFormat>select %{data} from %{dbtable}  %{where}</queryFormat> 
+			</DbDetails>
+			</TextBox>        
+	<BR/><Label Name="lb_totallanmei"  Text="蓝霉总数" Size="60,20"/>
+	<TextBox Name="tb_totallanmei" Visible="true" Enabled="false" ReadOnly="false" Size="60,20">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id inner join shop_product as p on p.p_id=d.p_id</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(case when p.p_name=23 then d.p_num else 0 end) as m</Data>
+				<Order></Order>
+				<queryFormat>select %{data} from %{dbtable}  %{where}</queryFormat> 
+			</DbDetails>
+			</TextBox>        
+	<BR/><Button Name="export" Size="50,20" Text="导出"><OnClick><submit next="OrderList" namelist="Save" method="post" function="savetofile"/></OnClick></Button>
+</Ctrls></GroupBox>
+</Ctrls></WndTap>
+
+
+

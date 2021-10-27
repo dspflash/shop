@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<WndTap name="dataAnalysis" text="数据分析">
+  <WndTaps>
+	<!--<xi:include href="analysis.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>-->
+	<xi:include href="IncomingCallStat.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="ClientsStat.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="userExtStat.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="failtransfer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="orderStat.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<!--xi:include href="orderAnalysis0.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/-->
+	<xi:include href="mediaStat.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="mediaStat0.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<xi:include href="meidaAnalysis.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+  </WndTaps>
+</WndTap>

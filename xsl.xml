@@ -1,0 +1,38 @@
+﻿<WndTap Name="importxls" Text="导入xls"><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="折扣管理" Size="100,100"><Ctrls>
+		<Label Name="lb_filename" Size="80,20" Text="需导入的文件" align="right"></Label>
+		<TextBox Name="TB_filename" Size="150,20" Text="tmp.xls"></TextBox>        
+		<Label Name="lb_tbname"  Size="60,20" Text="表名" align="right"></Label>
+		<TextBox Name="TB_tbname" Size="60,20" Text="sheet1"></TextBox>        
+	       	<!--<Button Name="BrowseFile"  
+	     	LocationX="230" LocationY="30" SizeWidth="100" SizeHeight="24"
+	      	Text="浏览文件" OnClick="(TB_filename)BrowseFile:,filter=*.xls|*.xls|,localdir="></Button>-->
+		<Button Name="SendFile"  Clickneedconfirm="true" Size="60,20"
+		    Text="上传文件" OnClick="SendFile:,filter=*.xls|*.xls|,dir=layout,localdir="></Button>
+		<Button Name="search"  Size="60,20" Text="查找" >
+			<OnClick><DbDetails></DbDetails><submit next="dataList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="import"   Text="导入" Size="60,20">
+			<OnClick><import button="import">sql:insert into gwcalls (callerid,calledid,starttime,duration,totalduration) values('%1','%2','%3',%4,%5);</import><submit next="dataList" namelist="import" method="post" function="import"/></OnClick></Button>
+
+<!--	        <Button Name="insert"  
+	            LocationX="230" LocationY="300" SizeWidth="100" SizeHeight="24" Text="新增" 
+	            OnClick="sql:insert into base (base_user_code,base_name,work_address,base_mobil) values('%{TB_code}','%{TB_custom}','%{TB_ADDR}','%{TB_TEL}')"></Button>-->
+		<BR/><ListCtrl Name="dataList"  PageSize="5" Size="600,500"
+			OnClick="SetText(TB_code,%0);SetText(TB_custom,%1);SetText(TB_ADDR,%2);SetText(TB_TEL,%3);SetText(TB_website,%4);SetText(TB_Post,%5);SetText(TB_mainbiz,%6);SetText(TB_fax,%7);SetText(TB_bankaccount,%8)"
+			>
+			<DbDetails>
+				<DbHost>local</DbHost>
+				<DbDatabase>layout\%{TB_filename}</DbDatabase>
+				<DbSubDriver>Excel</DbSubDriver>
+				<DbTable>[%{TB_tbname}$]</DbTable>
+				<Index>id</Index>
+				<Data>*</Data>
+				<!--<Order>id desc</Order>
+				<queryFormat>select * from (select %{data},ROW_NUMBER() OVER(Order by a.%{order} ) AS RowNumber from %{dbtable}  as a) as b where ToName='%{userid}' and RowNumber BETWEEN  %{StartRow} and %{StartRow}+%{PgSize}	database=3UCS价格体系2010_derek.xsl</queryFormat> 
+				<Where>idx=1</Where>
+				<queryFormat>select %{data} from %{dbtable} where %{where} order by %{order} limit %{StartRow},%{PgSize}</queryFormat>  mysql limit-->
+				<!--<liststyle>tbox</liststyle>-->
+			</DbDetails>
+			</ListCtrl>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

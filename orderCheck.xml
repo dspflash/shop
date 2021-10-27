@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderCheck" Text="订单审核"><Ctrls>
+	<xi:include href="odrb.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+	<BR AutoHeight="1"/><TAB/><ListCtrl Name="OrderList" PageSize="10" Size="560,100" ToolTip="订单列表" Visible="1"
+		Heading="订单号,50;联系人,50;订单时间,100;移动电话,80;固定电话,80;具体地址,160;总价,80;送货方式,80;货单号,100;购买目的,80;经办人,50;审核状态,60;付款方式,20;备注,100;"
+		OnClick="SetSel(CB_shfs,%{s_desc});SetSel(CB_tdreason,%{g_desc});SetSel(CB_orderState,%{state_desc});SetSel(CB_fp,%{o_fp});SetSel(UserLst,%{o_jobno}));SetSel(CB_Discount,%{dc})">
+			<DbDetails fcsm="1">
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs as s ON o.o_shfs = s.s_id LEFT OUTER JOIN shop_order_state as t ON o.o_state = t.id LEFT OUTER JOIN shop_gmmd as g ON o.o_gmmd = g.id</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id,o.o_name,o.o_dt,o.o_mobile,o.o_tel,o.o_add,o.o_zj,s.s_desc,o.o_hdid,g.g_desc,o.o_jobno,t.state_desc,o.o_fp,o.o_remark,o.o_cjj,100-o.o_nudiscount as dc</Data>
+				<Order>o.o_id desc</Order>
+				<Where>where c_id=%{custom.TB_code}</Where>
+				<queryFormat>select %{data} from %{dbtable} %{where} order by %{order} limit %{StartRow},%{PgSize} </queryFormat> 
+			</DbDetails>
+			</ListCtrl>
+	<Label name="locodrop" Size="120,20" overlap="ginfo"/><GroupBox Name="orderop"  Text="订单处理" Size="60,20"><Ctrls>
+	<Button Name="check"  Clickneedconfirm="true" Size="60,20" Text="审核订单" ToolTip="将选中的订单（可多个）设为已审核状态">
+		<OnClick>
+		<import button="check"  selected="1">sql:update shop_order set o_state=8 where o_id=%0</import>
+		<submit next="OrderList" namelist="import" method="post" function="import"/>
+		<DbDetails/><submit next="OrderList" namelist="DbDetails" method="post"/>
+		</OnClick></Button>
+	<BR/><Button Name="cancelConfirm"  Clickneedconfirm="true" Size="60,20" Text="置未确认" ToolTip="将选中的订单（可多个）设为未确认状态">
+		<OnClick>
+		<import button="cancelConfirm"  selected="1">sql:Update shop_order set o_state=0 where o_id=%0 and o_state!=0</import>
+		<submit next="OrderList" namelist="import" method="post"  function="import"/>
+		<DbDetails/><submit next="OrderList" namelist="DbDetails" method="post"/>
+		</OnClick></Button>
+	<BR/><ComboBox Name="CB_shfs0"  Items="邮购|快递" 
+		OnLoad="sql:select s_desc ,s_id  from shop_shfs where s_state=1" Size="60,20" SelectedIndex="-1"></ComboBox>
+	<BR/><Button Name="search" Size="60,20" Text="显示待审核">
+		<OnClick><SetVisible name="orderlist" visible="1"/><!--if cond="SeatsLevel&lt;3"><assign name="sqlext" expr=" and s.seatsgroup=%{SeatsGroup}"/><else/><assign name="sqlext" expr=""/></if-->
+			<if cond="%{CB_shfs0[SelectedIndex]}&lt;0"><DbDetails><Where>where o.o_state=1 and year(o_dt)>2011 %{sqlext}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/>
+			<else/><DbDetails><Where>where o.o_state=1 and year(o_dt)>2011 and o.o_shfs=%{CB_shfs0[s_id]} %{sqlext}</Where></DbDetails><submit next="OrderList" namelist="DbDetails" method="post"/><assign name="CB_shfs0" expr="-1" function="SetSel"/></if></OnClick></Button>
+	<BR/><Button Name="PrePage" Size="60,20" Text="上一页" OnClick="(OrderList)GetPage(Pre)"></Button>
+	<BR/><Button Name="NextPage" Size="60,20" Text="下一页" OnClick="(OrderList)GetPage(Next)"></Button>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>
+
+
+

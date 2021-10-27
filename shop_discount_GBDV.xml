@@ -1,0 +1,17 @@
+﻿<GroupBox cols="xs12 sm12 md12 lg12" Name="GBDVshop_discount"><Ctrls>
+<ListCtrl loadedclick="0" ToolTip="ttp_shop_discount" Name="shop_discountLst" Size="700,420">
+	<DbDetails fcsm="1">
+<DbTable>mylayout.shop_discount</DbTable>
+<Index>id</Index>
+<Data>dc_desc,state,remark,id</Data>
+<Order>id</Order></DbDetails>
+<operator firstpage="1" nextpage="1" refresh="1" prepage="1">
+<op text="modify"><DbDetails><Where>id='%{shop_discount_vLst[id]}'</Where></DbDetails><submit next="$this.shop_discount.shop_discountLst" namelist="DbDetails"/></op>
+<op text="delete" needconfirm="1"><DbDetails>
+<DbTable>mylayout.shop_discount</DbTable>
+<Where>id='%{shop_discount_vLst[id]}'</Where>
+<queryFormat>delete from %{table} where %{where}</queryFormat></DbDetails>
+<submit namelist="DbDetails"/><submit/></op>
+</operator>
+</ListCtrl>
+</Ctrls></GroupBox>

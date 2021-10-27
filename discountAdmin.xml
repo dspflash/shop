@@ -1,0 +1,36 @@
+<WndTap Name="discountAdmin" Text="折扣管理"><!--update shop_product set iAlert=1--><Ctrls>
+	<GroupBox Name="GroupBox1"  Text="折扣管理" Size="100,100"><Ctrls>
+		<Label Name="lb_name" Size="50,20" Text="折扣率" align="right"></Label>
+		<TextBox Name="TB_name" Size="50,20" Number="1" Text=""></TextBox>        
+		<Label Name="lb_remark" Size="50,20" Text="备注" align="right"></Label>
+		<TextBox Name="TB_remark" Size="150,20" Text=""></TextBox>        
+		<TAB/><ComboBox Name="InService" Size="80,100" Type="3" Items="禁用|启用" SelectedIndex="1"></ComboBox>
+		<Button Name="insert"  Size="60,20" Text="添加折扣">
+			<OnClick><DbDetails><queryFormat>insert into shop_discount (dc_desc,remark,state) values('%{TB_name}','%{TB_remark}',%{InService[SelectedIndex]})</queryFormat></DbDetails>
+				<submit namelist="DbDetails" method="post"/><DbDetails/><submit next="ppList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		<Button Name="disabled"  Size="60,20" Text="禁用" tooltip="禁用该折扣，显示正常，但不能添加该折扣价格">
+				<OnClick><DbDetails><queryFormat>update shop_discount set state=0 where id =%{ppList[id]}</queryFormat></DbDetails>
+					<submit namelist="DbDetails" method="post"/><DbDetails/><submit next="ppList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="enabled"  Size="60,20" Text="启用" tooltip="启用该折扣，可添加该折扣价格">
+				<OnClick><DbDetails><queryFormat>update shop_discount set state=1 where id =%{ppList[id]}</queryFormat></DbDetails>
+					<submit namelist="DbDetails" method="post"/><DbDetails/><submit next="ppList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<BR/><ListCtrl Name="ppList"  PageSize="10" Size="600,500" loadedclick="false"	OnClick="" OnLoad="init"
+		   Heading="序号,80;折扣率,80;启用/禁用状态,80;备注,80;">
+			<DbDetails>
+				<DbTable>shop_discount</DbTable>
+				<Index>d_id</Index>
+				<Data>*</Data>
+				<Order></Order>
+				<Where></Where>
+				<!--queryFormat>select n.p_name,t.x_desc,p.p_dj,p.iAlert
+ from shop_product as p inner join shop_p_name as n on p.p_name=n.p_id
+ left outer join shop_xinghao as t on p.p_xh=t.id</queryFormat--> 
+			</DbDetails>
+			</ListCtrl>
+		<Button Name="refreshPrice"  Size="60,20" Text="刷新" >
+			<OnClick>
+			<DbDetails></DbDetails><submit next="ppList" namelist="DbDetails" method="post"/>
+			</OnClick></Button>
+	</Ctrls></GroupBox>
+</Ctrls></WndTap>

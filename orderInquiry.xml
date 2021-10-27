@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WndTap Name="orderInquiry" Text="订单查询">
+	<Ctrls><GroupBox Name="GroupBox1" Text="订单查询"><Ctrls>
+		<DateTime Name="YearMon"  Format="yyyy-MM-dd" Size="80,20"></DateTime>
+		<ComboBox Name="CB_orderState" Size="60,20"
+			OnLoad="sql:select state_desc,id from shop_order_state" SelectedIndex="0"></ComboBox>
+		<ComboBox Name="UserCbLst"  OnLoad="init" Size="60,20" SelectedIndex="-1">
+			<DbDetails>
+				<!--Where>where seatsgroup=%{SeatsGroup}</Where-->
+				<queryFormat>select user_name,user_code from userlogin where id_corp='%{id_corp}' order by user_code</queryFormat> 
+			</DbDetails>
+		</ComboBox>
+		<Label Name="lb_totalrecs"  Text="总记录数" Size="50,20"/>
+		<TextBox Name="tb_totalrecs" ReadOnly="1" Size="30,20">
+			<DbDetails>
+				<DbTable>shop_order o left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>count(*) as cnts</Data>
+				<Order>o.o_id desc</Order>
+			</DbDetails>
+			</TextBox>        
+		<Label Name="lb_totalmoney" Text="总金额" Size="50,20"/>
+		<TextBox Name="tb_totalmoney" ReadOnly="1" Size="50,20">
+			<DbDetails>
+				<DbTable>shop_order o left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(o_zj) as zj</Data>
+			</DbDetails>
+			</TextBox>        
+		<!--Label Name="lb_totalyantie"  Text="眼贴总数" Size="50,20"/>
+		<TextBox Name="tb_totalyantie" ReadOnly="1" Size="30,20" Text="">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id inner join shop_product as p on p.p_id=d.p_id left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(case when p.p_name=14 then d.p_num else 0 end) as t</Data>
+				<Order></Order>
+			</DbDetails>
+			</TextBox>        
+		<Label Name="lb_totallanmei"  Text="蓝霉总数" Size="50,20"/>
+		<TextBox Name="tb_totallanmei" ReadOnly="1" Size="30,20">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id inner join shop_product as p on p.p_id=d.p_id left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>sum(case when p.p_name=23 then d.p_num else 0 end) as m</Data>
+				<Order></Order>
+			</DbDetails>
+			</TextBox-->        
+		<Button Name="export" Visible="false" Enabled="true" Size="30,20" Text="导出">
+			<OnClick>
+				<Save></Save><submit next="OrderList" namelist="Save" method="post" function="savetofile"/>
+			</OnClick></Button>
+		<BR/><Button Name="search"  Size="30,20" Text="显示">
+			<OnClick>
+				<assign name="sqltime" expr="o.o_state=%{CB_orderState[id]} and year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+				<!--if cond="SeatsLevel&gt;2"--><assign name="sqlwhere" expr="%{sqltime}"/>
+				<!--else/><assign name="sqlwhere" expr="%{sqltime} and SeatsInfo.seatsgroup=%{SeatsGroup}"/></if-->
+				<DbDetails><Where>%{sqlwhere}</Where></DbDetails>
+				<submit next="tb_totalrecs" namelist="DbDetails" method="post"/>
+				<submit next="tb_totalmoney" namelist="DbDetails" method="post"/>
+				<submit next="tb_totalyantie" namelist="DbDetails" method="post"/>
+				<submit next="tb_totallanmei" namelist="DbDetails" method="post"/>
+				<submit next="OrderList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		<Button Name="searchall" Size="60,20" Text="显示全部">
+		<OnClick>	
+		<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+		<!--if cond="SeatsLevel&gt;2"--><assign name="sqlwhere" expr="%{sqltime}"/>
+		<!--else/><assign name="sqlwhere" expr="%{sqltime} and SeatsInfo.seatsgroup=%{SeatsGroup}"/></if-->
+		<DbDetails><Where>%{sqlwhere}</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="searchU" Size="60,20" Text="按经手人查">
+		<OnClick>
+		<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+		<DbDetails><Where>o.o_jobno=%{UserCbLst} and %{sqltime}</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<ComboBox Name="GroupLst" Visible="false" Enabled="true" OnLoad="sql:select distinct seatsgroup from seatsinfo"
+		Size="60,20" SelectedIndex="0">
+		</ComboBox>
+		<Button Name="searchGrp" Visible="false" Enabled="true" 
+		Size="60,20" Text="按组查询">
+		<OnClick>	
+		<assign name="sqltime" expr="year(o_dt)='%{YearMon[year]}' and month(o_dt)='%{YearMon[month]}' and day(o_dt)='%{YearMon[day]}'"/>
+		<DbDetails><Where>%{sqltime} and SeatsInfo.seatsgroup=%{GroupLst}</Where></DbDetails><submit next="tb_totalrecs" namelist="DbDetails" method="post"/><submit next="tb_totalmoney" namelist="DbDetails" method="post"/><submit next="tb_totalyantie" namelist="DbDetails" method="post"/><submit next="tb_totallanmei" namelist="DbDetails" method="post"/><submit next="OrderList" namelist="DbDetails" method="post"/></OnClick></Button>
+		<Button Name="checked" Visible="false" Enabled="true" Clickneedconfirm="true"
+		 Size="60,20" Text="置已审核">
+			<OnClick>
+			<import button="checked"  selected="1">sql:Update shop_order set o_state=8 where o_id=%0</import><submit next="OrderList" namelist="import" method="post"  function="import"/>
+			</OnClick></Button>
+		 <Button Name="cancelConfirm" Visible="false" Enabled="true" Clickneedconfirm="true"
+Size="60,20" Text="置未确认">
+			<OnClick>
+			<import button="cancelConfirm"  selected="1">sql:Update shop_order set o_state=0 where o_id=%0</import><submit next="OrderList" namelist="import" method="post"  function="import"/>
+			</OnClick></Button>
+		  <Button Name="dial0"  
+		            Size="60,20" Text="查询固话">
+				<OnClick><assign name="custom.c_mobile" expr="%{OrderList[5]}"/>
+				<DbDetails></DbDetails><submit next="custom.TB_Location" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where c_tel='%{custom.c_mobile}' or c_mobile='%{custom.c_mobile}' or c_elsephone='%{custom.c_mobile}' </Where></DbDetails><submit next="custom.ContactList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		  <Button Name="dial1"  Size="60,20" Text="查询手机">
+				<OnClick><assign name="custom.c_mobile" expr="%{OrderList[6]}"/>
+				<DbDetails></DbDetails><submit next="custom.TB_Location" namelist="DbDetails" method="post"/>
+				<DbDetails><Where>where c_tel='%{custom.c_mobile}' or c_mobile='%{custom.c_mobile}' or c_elsephone='%{custom.c_mobile}'</Where></DbDetails><submit next="custom.ContactList" namelist="DbDetails" method="post"/>
+				</OnClick></Button>
+		<BR/><ListCtrl Name="OrderList" PageSize="10" Size="600,400" DataJoin="%{this}%{detail}">
+			<MDX id="detail">
+			<DbDetails>
+				<DbTable>shop_order_detail as d inner join shop_order as o on d.o_id=o.o_id left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno inner join shop_items as p on d.p_id=p.item_id</DbTable>
+				<Index>h_id </Index>
+				<MDX>订单号,name,pnum</MDX>
+				<Data>d.o_id as 订单号,concat(p.item_name,d.d_model) as name,sum(d.p_num) as pnum</Data>
+				<Order></Order>
+				<queryFormat>select %{data} from %{dbtable} where %{where} group by d.o_id,d.p_id,d.d_model</queryFormat> 
+			</DbDetails>
+			</MDX>
+			<DbDetails>
+				<DbTable>shop_order as o LEFT OUTER JOIN shop_shfs ON o.o_shfs = shop_shfs.s_id LEFT OUTER JOIN shop_order_state ON o.o_state = shop_order_state.id left outer join SeatsInfo on SeatsInfo.SeatsNo=o.o_jobno</DbTable>
+				<Index>o_id</Index>
+				<Data>o.o_id as 订单号,shop_order_state.state_desc 审核状态,o.o_name as 联系人,(case when o.o_sex=1 then '女' else '男' end) as 性别,o.o_age as 年龄,o.o_tel as 固定电话,o.o_mobile as 移动电话,o.o_remark as 备注,o.o_zj as 金额,(case when o.o_fp=1 then '是' else '否' end) as 发票,'' as 抬头,o.o_add as 联系地址,SeatsInfo.SeatsName as 经手人,o.SeatsNo as 坐席号,shop_shfs.s_desc as 送货方式,o.o_hdid as 货单号</Data>
+				<Order>shop_order.o_id desc</Order>
+				<queryFormat>select %{data} from %{dbtable} where %{where} order by 订单号 desc</queryFormat> 
+			</DbDetails>
+		</ListCtrl>
+	</Ctrls></GroupBox></Ctrls>
+	<OnActivate><if cond="SeatsLevel&gt;2">
+		<DbDetails><Where></Where></DbDetails><submit next="UserCbLst" namelist="DbDetails" method="post"/>
+		<SetVisible name="GroupLst" Visible="1"/><SetVisible name="searchGrp" Visible="1"/>
+		</if>
+		<if cond="SeatsLevel&gt;1">
+		<SetVisible name="checked" Visible="1"/><SetVisible name="cancelConfirm" Visible="1"/><SetVisible name="export" Visible="1"/>
+		</if>
+		</OnActivate>
+ </WndTap>
+
+
+
